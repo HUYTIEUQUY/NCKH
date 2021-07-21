@@ -4,6 +4,7 @@ from tkinter import PhotoImage
 from tkinter.ttk import Combobox
 from PIL import ImageTk
 import csdl
+import csdl_lop
 from tkinter import messagebox
 import dangnhap
 import socket
@@ -25,16 +26,26 @@ def main():
             tv.insert('','end',values=i)
     def them():
         ten=tenlop.get()
-        csdl.themlop(makhoa,ten)
-        row=csdl.banglop(makhoa)
+        csdl_lop.themlop(makhoa,ten)
+        row=csdl_lop.banglop(makhoa)
         messagebox.showinfo("thông báo","Thêm '"+ten+"' thành công")
         update(row)
     def xoa():
         ten=tenlop.get()
-        csdl.xoalop(malop.get())
-        row=csdl.banglop(makhoa)
-        messagebox.showinfo("thông báo","Xoá '"+ten+"' thành công")
-        update(row)
+        if csdl_lop.kt_loptontai(malop.get()) == True:
+            csdl_lop.xoalop(malop.get())
+            row=csdl_lop.banglop(makhoa)
+            messagebox.showinfo("thông báo","Xoá '"+ten+"' thành công")
+            update(row)
+            tenlop.set("")
+        else:
+            messagebox.showerror("thông báo", "Xoá lớp thất bại")
+    def sua():
+        tenmoi=tenlop.get()
+        malop1=malop.get()
+        csdl_lop.sua(malop1,tenmoi)
+        messagebox.showinfo("thông báo","Đã đổi tên lớp thành công")
+        khoiphuc()
     def getrow(event):
         rowid=tv.identify_row(event.y)
         item=tv.item(tv.focus())
@@ -42,10 +53,10 @@ def main():
         malop.set(item['values'][1])
     def khoiphuc():
         ndtimkiem.set("")
-        row=csdl.banglop(makhoa)
+        row=csdl_lop.banglop(makhoa)
         update(row)
     def timkiem():
-        row=csdl.timkiem_lop(makhoa,ndtimkiem.get())
+        row=csdl_lop.timkiem_lop(makhoa,ndtimkiem.get())
         update(row)
     def menuthongke():
         win.destroy()
@@ -111,7 +122,7 @@ def main():
 
     btnthem=Button(bg,image=img_btnthem,bd=0,highlightthickness=0,command=them)
     btnthem.place(x=487,y=181)
-    btnsua=Button(bg,image=img_btnsua,bd=0,highlightthickness=0)
+    btnsua=Button(bg,image=img_btnsua,bd=0,highlightthickness=0,command=sua)
     btnsua.place(x=637,y=181)
     btnxoa=Button(bg,image=img_btnxoa,bd=0,highlightthickness=0,command=xoa)
     btnxoa.place(x=770,y=181)
@@ -133,16 +144,16 @@ def main():
     Entry(bg,font=("Baloo Tamma",11),width=27,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=656,y=251)
 
     tv = ttk.Treeview(bg, columns=(1,2,3), show="headings")
-    tv.column(1, width=80,anchor=CENTER)
-    tv.column(2, width=80,anchor=CENTER)
-    tv.column(3, width=200)
+    tv.column(1, width=120,anchor=CENTER)
+    tv.column(2, width=120,anchor=CENTER)
+    tv.column(3, width=300)
 
     tv.heading(1,text="Số thứ tự")
     tv.heading(2,text="Mã Lớp")
     tv.heading(3,text="Tên Lớp")
-    tv.place(x=349,y=320)
+    tv.place(x=390,y=320)
     tv.bind('<Double 1>', getrow)
-    row=csdl.banglop(makhoa)
+    row=csdl_lop.banglop(makhoa)
     update(row)
     win.mainloop()
 
