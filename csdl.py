@@ -466,3 +466,23 @@ def timkiem_diemdanh(magv,ngay,mamh,lop,ca,q):
     rows = cur.fetchall()
     return rows
 
+def banglop(makhoa):
+    cur=conn.cursor()
+    cur.execute("SELECT ROW_NUMBER() OVER ( ORDER BY MaLop) AS STT , MaLop ,TenLop FROM lop where MaKhoa = "+str(makhoa)+"" ) 
+    rows = cur.fetchall()
+    return rows
+def timkiem_lop(makhoa,q):
+    cur=conn.cursor()
+    cur.execute("SELECT ROW_NUMBER() OVER ( ORDER BY MaLop) AS STT , MaLop ,TenLop FROM lop where MaKhoa = "+str(makhoa)+" AND (MaLop like '%"+str(q)+"%' OR TenLop like '%"+str(q)+"%')" ) 
+    rows = cur.fetchall()
+    return rows
+def themlop(makhoa,tenl):
+    cur=conn.cursor()
+    cur.execute("INSERT INTO lop(TenLop, MaKhoa) VALUES ('"+str(tenl)+"',"+str(makhoa)+")" ) 
+    conn.commit()
+def xoalop(malop):
+    cur=conn.cursor()
+    cur.execute("DELETE FROM lop WHERE MaLop="+str(malop)+"" ) 
+    conn.commit()
+
+

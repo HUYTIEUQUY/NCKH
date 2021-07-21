@@ -1,5 +1,4 @@
 from tkinter import *
-from tkinter import ttk
 from tkinter import PhotoImage
 from tkinter.ttk import Combobox
 from PIL import ImageTk
@@ -11,45 +10,15 @@ import mysql.connector
 import pickle
 import cv2
 import face_recognition
+import admin_lop
 import admin_giangvien
-import admin_thongke
 import admin_tkb
-
-
 
 def main():
 
-    def update(row):
-        tv.delete(*tv.get_children())
-        for i in row:
-            tv.insert('','end',values=i)
-    def them():
-        ten=tenlop.get()
-        csdl.themlop(makhoa,ten)
-        row=csdl.banglop(makhoa)
-        messagebox.showinfo("thông báo","Thêm '"+ten+"' thành công")
-        update(row)
-    def xoa():
-        ten=tenlop.get()
-        csdl.xoalop(malop.get())
-        row=csdl.banglop(makhoa)
-        messagebox.showinfo("thông báo","Xoá '"+ten+"' thành công")
-        update(row)
-    def getrow(event):
-        rowid=tv.identify_row(event.y)
-        item=tv.item(tv.focus())
-        tenlop.set(item['values'][2])
-        malop.set(item['values'][1])
-    def khoiphuc():
-        ndtimkiem.set("")
-        row=csdl.banglop(makhoa)
-        update(row)
-    def timkiem():
-        row=csdl.timkiem_lop(makhoa,ndtimkiem.get())
-        update(row)
-    def menuthongke():
+    def menulop():
         win.destroy()
-        admin_thongke.main()
+        admin_lop.main()
     def menutkb():
         win.destroy()
         admin_tkb.main()
@@ -63,6 +32,7 @@ def main():
         file.close()
         win.destroy()
         dangnhap.main()
+
     win=Tk()
     win.geometry("1000x600+300+120")
     win.resizable(False,False)
@@ -71,15 +41,14 @@ def main():
     img_bg=ImageTk.PhotoImage(file="img_admin/bg_lop.png")
 
     img_menudangxuat=ImageTk.PhotoImage(file="img_admin/btn_dangxuat.png")
-    img_menulophoc=ImageTk.PhotoImage(file="img_admin/menu_lophoc1.png")
+    img_menulophoc=ImageTk.PhotoImage(file="img_admin/menu_lophoc.png")
     img_menugiangvien=ImageTk.PhotoImage(file="img_admin/menu_giangvien.png")
     img_menutkb=ImageTk.PhotoImage(file="img_admin/menu_tkb.png")
-    img_menuthongke=ImageTk.PhotoImage(file="img_admin/menu_thongke.png")
+    img_menuthongke=ImageTk.PhotoImage(file="img_admin/menu_thongke1.png")
     img_btnthem=ImageTk.PhotoImage(file="img_admin/btn_them.png")
     img_btnsua=ImageTk.PhotoImage(file="img_admin/btn_sua.png")
     img_btnxoa=ImageTk.PhotoImage(file="img_admin/btn_xoa.png")
     img_btntimkiem=ImageTk.PhotoImage(file="img_admin/btn_timkiem.png")
-    img_btnkhoiphuc=ImageTk.PhotoImage(file="img_admin/btn_khoiphuc.png")
 
     
 #------------------------------------------------------------------------------
@@ -89,9 +58,7 @@ def main():
         d=file.read().split()
     email=d[0]
     makhoa=csdl.makhoa_tu_email(email)
-    tenlop=StringVar()
-    malop=StringVar()
-    ndtimkiem=StringVar()
+    
 
 #-------------------------------------------------------------------------------
     bg=Canvas(win,width=1000,height=600,bg="green")
@@ -100,49 +67,29 @@ def main():
 
     menudangxuat=Button(bg,image=img_menudangxuat,bd=0,highlightthickness=0,command=menudangxuat)
     menudangxuat.place(x=248,y=44)
-    menulophoc=Button(bg,image=img_menulophoc,bd=0,highlightthickness=0)
+    menulophoc=Button(bg,image=img_menulophoc,bd=0,highlightthickness=0,command=menulop)
     menulophoc.place(x=43,y=127)
     menugiangvien=Button(bg,image=img_menugiangvien,bd=0,highlightthickness=0,command=menugiangvien)
     menugiangvien.place(x=43,y=245)
     menutkb=Button(bg,image=img_menutkb,bd=0,highlightthickness=0,command=menutkb)
     menutkb.place(x=43,y=363)
-    menuthongke=Button(bg,image=img_menuthongke,bd=0,highlightthickness=0,command=menuthongke)
+    menuthongke=Button(bg,image=img_menuthongke,bd=0,highlightthickness=0,command=main)
     menuthongke.place(x=43,y=481)
 
-    btnthem=Button(bg,image=img_btnthem,bd=0,highlightthickness=0,command=them)
+    btnthem=Button(bg,image=img_btnthem,bd=0,highlightthickness=0)
     btnthem.place(x=487,y=181)
     btnsua=Button(bg,image=img_btnsua,bd=0,highlightthickness=0)
     btnsua.place(x=637,y=181)
-    btnxoa=Button(bg,image=img_btnxoa,bd=0,highlightthickness=0,command=xoa)
+    btnxoa=Button(bg,image=img_btnxoa,bd=0,highlightthickness=0)
     btnxoa.place(x=770,y=181)
-    btntimkiem=Button(bg,image=img_btntimkiem,bd=0,highlightthickness=0,command=timkiem)
-    btntimkiem.place(x=881,y=250)
-    btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,command=khoiphuc)
-    btnkhoiphuc.place(x=920,y=250)
+    btntimkiem=Button(bg,image=img_btntimkiem,bd=0,highlightthickness=0)
+    btntimkiem.place(x=913,y=250)
 
  
     tengv=csdl.tim_tengv_tu_email()
     Label(bg,text=tengv,font=("Baloo Tamma",14),fg="#A672BB",bg="white").place(x=45,y=40)
 
-    tenkhoa=csdl.tenkhoatuma(makhoa)
-    Label(bg,text=tenkhoa,font=("Baloo Tamma",11),fg="black",bg="white").place(x=549,y=69)
     
     
-    Entry(bg,font=("Baloo Tamma",11),width=37,textvariable=tenlop,bd=0,highlightthickness=0).place(x=549,y=115)
-    
-    Entry(bg,font=("Baloo Tamma",11),width=27,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=656,y=251)
-
-    tv = ttk.Treeview(bg, columns=(1,2,3), show="headings")
-    tv.column(1, width=80,anchor=CENTER)
-    tv.column(2, width=80,anchor=CENTER)
-    tv.column(3, width=200)
-
-    tv.heading(1,text="Số thứ tự")
-    tv.heading(2,text="Mã Lớp")
-    tv.heading(3,text="Tên Lớp")
-    tv.place(x=349,y=320)
-    tv.bind('<Double 1>', getrow)
-    row=csdl.banglop(makhoa)
-    update(row)
     win.mainloop()
 
