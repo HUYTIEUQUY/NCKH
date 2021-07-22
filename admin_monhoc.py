@@ -12,20 +12,22 @@ import cv2
 import face_recognition
 import admin_lop
 import admin_giangvien
+import admin_thongke
 import admin_tkb
-import admin_monhoc
+
+
 
 def main():
 
-    def menulop():
+    def menuthongke():
         win.destroy()
-        admin_lop.main()
-    def menumonhoc():
-        win.destroy()
-        admin_monhoc.main()
+        admin_thongke.main()
     def menutkb():
         win.destroy()
         admin_tkb.main()
+    def menulop():
+        win.destroy()
+        admin_lop.main()
     def menugiangvien():
         win.destroy()
         admin_giangvien.main()
@@ -48,12 +50,12 @@ def main():
     img_menulophoc=ImageTk.PhotoImage(file="img_admin/menu_lophoc.png")
     img_menugiangvien=ImageTk.PhotoImage(file="img_admin/menu_giangvien.png")
     img_menutkb=ImageTk.PhotoImage(file="img_admin/menu_tkb.png")
-    img_menuthongke=ImageTk.PhotoImage(file="img_admin/menu_thongke1.png")
+    img_menuthongke=ImageTk.PhotoImage(file="img_admin/menu_thongke.png")
     img_btnthem=ImageTk.PhotoImage(file="img_admin/btn_them.png")
     img_btnsua=ImageTk.PhotoImage(file="img_admin/btn_sua.png")
     img_btnxoa=ImageTk.PhotoImage(file="img_admin/btn_xoa.png")
     img_btntimkiem=ImageTk.PhotoImage(file="img_admin/btn_timkiem.png")
-    img_menumonhoc=ImageTk.PhotoImage(file="img_admin/menu_monhoc.png")
+    img_menumonhoc=ImageTk.PhotoImage(file="img_admin/menu_monhoc1.png")
 
     
 #------------------------------------------------------------------------------
@@ -78,9 +80,9 @@ def main():
     menugiangvien.place(x=30,y=212)
     menutkb=Button(bg,image=img_menutkb,bd=0,highlightthickness=0,command=menutkb)
     menutkb.place(x=30,y=296)
-    menumonhoc=Button(bg,image=img_menumonhoc,bd=0,highlightthickness=0,command=menumonhoc)
+    menumonhoc=Button(bg,image=img_menumonhoc,bd=0,highlightthickness=0,command=menutkb)
     menumonhoc.place(x=30,y=380)
-    menuthongke=Button(bg,image=img_menuthongke,bd=0,highlightthickness=0,command=main)
+    menuthongke=Button(bg,image=img_menuthongke,bd=0,highlightthickness=0,command=menuthongke)
     menuthongke.place(x=30,y=461)
 
     btnthem=Button(bg,image=img_btnthem,bd=0,highlightthickness=0)

@@ -13,6 +13,7 @@ import face_recognition
 import admin_lop
 import admin_giangvien
 import admin_thongke
+import admin_monhoc
 
 
 
@@ -21,6 +22,9 @@ def main():
     def menuthongke():
         win.destroy()
         admin_thongke.main()
+    def menumonhoc():
+        win.destroy()
+        admin_monhoc.main()
     def menulop():
         win.destroy()
         admin_lop.main()
@@ -51,6 +55,7 @@ def main():
     img_btnsua=ImageTk.PhotoImage(file="img_admin/btn_sua.png")
     img_btnxoa=ImageTk.PhotoImage(file="img_admin/btn_xoa.png")
     img_btntimkiem=ImageTk.PhotoImage(file="img_admin/btn_timkiem.png")
+    img_menumonhoc=ImageTk.PhotoImage(file="img_admin/menu_monhoc.png")
 
     
 #------------------------------------------------------------------------------
@@ -70,13 +75,15 @@ def main():
     menudangxuat=Button(bg,image=img_menudangxuat,bd=0,highlightthickness=0,command=menudangxuat)
     menudangxuat.place(x=248,y=44)
     menulophoc=Button(bg,image=img_menulophoc,bd=0,highlightthickness=0,command=menulop)
-    menulophoc.place(x=43,y=127)
+    menulophoc.place(x=30,y=128)
     menugiangvien=Button(bg,image=img_menugiangvien,bd=0,highlightthickness=0,command=menugiangvien)
-    menugiangvien.place(x=43,y=245)
+    menugiangvien.place(x=30,y=212)
     menutkb=Button(bg,image=img_menutkb,bd=0,highlightthickness=0,command=main)
-    menutkb.place(x=43,y=363)
+    menutkb.place(x=30,y=296)
+    menumonhoc=Button(bg,image=img_menumonhoc,bd=0,highlightthickness=0,command=menumonhoc)
+    menumonhoc.place(x=30,y=380)
     menuthongke=Button(bg,image=img_menuthongke,bd=0,highlightthickness=0,command=menuthongke)
-    menuthongke.place(x=43,y=481)
+    menuthongke.place(x=30,y=461)
 
     btnthem=Button(bg,image=img_btnthem,bd=0,highlightthickness=0)
     btnthem.place(x=487,y=181)

@@ -15,6 +15,7 @@ import face_recognition
 import admin_giangvien
 import admin_thongke
 import admin_tkb
+import admin_monhoc
 
 
 
@@ -67,6 +68,9 @@ def main():
     def menugiangvien():
         win.destroy()
         admin_giangvien.main()
+    def menumonhoc():
+        win.destroy()
+        admin_giangvien.main()
     def menudangxuat():
         ten_thiet_bi = socket.gethostname()
         file=open(ten_thiet_bi+".txt","w")
@@ -85,6 +89,7 @@ def main():
     img_menulophoc=ImageTk.PhotoImage(file="img_admin/menu_lophoc1.png")
     img_menugiangvien=ImageTk.PhotoImage(file="img_admin/menu_giangvien.png")
     img_menutkb=ImageTk.PhotoImage(file="img_admin/menu_tkb.png")
+    img_menumonhoc=ImageTk.PhotoImage(file="img_admin/menu_monhoc.png")
     img_menuthongke=ImageTk.PhotoImage(file="img_admin/menu_thongke.png")
     img_btnthem=ImageTk.PhotoImage(file="img_admin/btn_them.png")
     img_btnsua=ImageTk.PhotoImage(file="img_admin/btn_sua.png")
@@ -112,13 +117,15 @@ def main():
     menudangxuat=Button(bg,image=img_menudangxuat,bd=0,highlightthickness=0,command=menudangxuat)
     menudangxuat.place(x=248,y=44)
     menulophoc=Button(bg,image=img_menulophoc,bd=0,highlightthickness=0)
-    menulophoc.place(x=43,y=127)
+    menulophoc.place(x=30,y=128)
     menugiangvien=Button(bg,image=img_menugiangvien,bd=0,highlightthickness=0,command=menugiangvien)
-    menugiangvien.place(x=43,y=245)
+    menugiangvien.place(x=30,y=212)
     menutkb=Button(bg,image=img_menutkb,bd=0,highlightthickness=0,command=menutkb)
-    menutkb.place(x=43,y=363)
+    menutkb.place(x=30,y=296)
+    menumonhoc=Button(bg,image=img_menumonhoc,bd=0,highlightthickness=0,command=menumonhoc)
+    menumonhoc.place(x=30,y=380)
     menuthongke=Button(bg,image=img_menuthongke,bd=0,highlightthickness=0,command=menuthongke)
-    menuthongke.place(x=43,y=481)
+    menuthongke.place(x=30,y=461)
 
     btnthem=Button(bg,image=img_btnthem,bd=0,highlightthickness=0,command=them)
     btnthem.place(x=487,y=181)
@@ -128,7 +135,7 @@ def main():
     btnxoa.place(x=770,y=181)
     btntimkiem=Button(bg,image=img_btntimkiem,bd=0,highlightthickness=0,command=timkiem)
     btntimkiem.place(x=881,y=250)
-    btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,command=khoiphuc)
+    btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,command=khoiphuc,bg="white")
     btnkhoiphuc.place(x=920,y=250)
 
  
