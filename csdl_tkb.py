@@ -1,78 +1,36 @@
 import mysql.connector
-from mysql.connector import cursor
+import socket 
 import datetime
-import csdl
 
 conn = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    password="",
-    database="diemdanhsinhvien"
+  host="localhost",
+  user="root",
+  password="",
+  database="diemdanhsinhvien"
 )
 
-def DS_tkb(matkb):
-    cur=conn.cursor()
-    cur.execute("SELECT Ngay, TenMH,TenGV,Ca FROM chitiettkb, monhoc, giangvien WHERE chitiettkb.MaMH=monhoc.MaMH AND giangvien.MaGV = chitiettkb.MaGV AND MaTKB ="+str(matkb)+" ORDER BY Ca" )
+
+cur=conn.cursor()
+
+def bangtkb(makhoa):
+    cur.execute("SELECT ROW_NUMBER() OVER ( ORDER BY MaTKB) AS STT , MaTKB ,TenLop,NgayLap FROM lop,tkb where MaKhoa = "+str(makhoa)+" AND tkb.MaLop=lop.MaLop" ) 
     rows = cur.fetchall()
     return rows
-
-def timkiem_tkb(q):
-  cur=conn.cursor()
-  cur.execute("SELECT Ngay,TenMH, TenGV,Ca FROM chitiettkb, monhoc, giangvien WHERE chitiettkb.MaMH=monhoc.MaMH AND giangvien.MaGV = chitiettkb.MaGV AND (TenMH like '%"+str(q)+"%' OR  TenGV like '%"+str(q)+"%' OR Ngay like '%"+str(q)+"%' OR Ca like '%"+str(q)+"%')")
-  rows = cur.fetchall()
-  return rows
-
-def xoa_dong_ds(ngay,monhoc,gv,ca):
-  cur=conn.cursor()
-  cur.execute("DELETE FROM chitiettkb WHERE Ngay like '"+str(ngay)+"' AND MaMH = "+str(monhoc)+" AND MaGV="+str(gv)+" AND Ca ='"+str(ca)+"'")
-  conn.commit()
-
-
-def them_tkb(matkb,mgv,mlop,mmh,ngay,ca):
-  cur = conn.cursor()
-  query=("INSERT INTO chitiettkb(MaTKB, MaGV, MaMH, MaLop, Ngay, Ca) VALUES (%s,%s,%s,%s,%s,%s)")
-  cur.execute(query,(matkb,mgv,mmh,mlop,ngay,ca))
-  conn.commit()
-
-
-def ma_lop_thanh_ten(ma):
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM lop where MaLop = "+str(ma)+"")
-    while True:
-
-        row = cur.fetchone()
-        
-        if row == None:
-            break
-            
-        a=row[1]
-    return a
-
-def KT_lichgiang (ngay,magv,ca):
-    
-    cur = conn.cursor()
-    cur.execute("SELECT MaMH FROM chitiettkb where  Ngay= '"+str(ngay)+"'  AND MaGV = "+str(magv)+" AND Ca like '%"+str(ca)+"%'")
-    while True:
-        row = cur.fetchone()
-        if row == None:
-            break
-        if row[0] != []:
-            return row[0]
-        else:
-            return 0
-    
-
-
-def KT_lich_tkb(ngay, malop,ca):
-    cur = conn.cursor()
-    cur.execute("SELECT MaMH FROM chitiettkb where  Ngay= '"+str(ngay)+"'  AND MaLop = "+str(malop)+" AND Ca like '%"+str(ca)+"%'")
-    while True:
-        row = cur.fetchone()
-        if row == None:
-            break
-        if row[0] != []:
-            return row[0]
-        else:
-            return 0
-
+def timkiem_tkb(makhoa,q):
+    cur.execute("SELECT ROW_NUMBER() OVER ( ORDER BY MaTKB) AS STT , MaTKB ,TenLop,NgayLap FROM lop,tkb where MaKhoa = "+str(makhoa)+" AND tkb.MaLop=lop.MaLop AND (MaTKB like '%"+str(q)+"%' OR TenLop like '%"+str(q)+"%' OR NgayLap like '%"+str(q)+"%')" ) 
+    rows = cur.fetchall()
+    return rows
+def themtkb(malop,ngaylap):
+    cur.execute("INSERT INTO tkb(MaLop, NgayLap) VALUES ("+str(malop)+",'"+str(ngaylap)+"')")
+    conn.commit()
+def xoatkb(matkb):
+    cur.execute("DELETE FROM tkb WHERE MaTKB="+str(matkb)+"" )
+    conn.commit()
+def kt_chitiettkb(matkb):# kiểm tra ma thòi khoá biểu có trong chi tiết thời khoá biểu hay không
+    cur.execute("SELECT MaTKB FROM chitiettkb where MaTKB = "+str(matkb)+"" ) 
+    rows = cur.fetchall()
+    return rows
+def suatkb(matkb,malop):
+    cur.execute("UPDATE tkb SET MaLop='"+str(malop)+"' WHERE MaTKB="+str(matkb)+"" ) 
+    conn.commit()
 

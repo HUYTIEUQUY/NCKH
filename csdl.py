@@ -335,13 +335,17 @@ def bangtkb(matkb):
 
 
 def dinh_dang_ngay(ngay):
-    ngay=ngay.replace("/"," ")
+    ngay=str(ngay).replace("/"," ")
     d=ngay.split()
-    if d[0].find("0") == 0:
-        d[0]=d[0].replace("0","")
-    if d[1].find("0") == 0:
-        d[1]=d[1].replace("0","")
-    ngay=d[1]+"/"+d[0]+"/20"+d[2]
+    if len(d[0])==1:
+        d[0]="0"+d[0]
+    if len(d[1])==1:
+        d[1]="0"+d[1]
+    if len(d[2]) ==4 :
+        ngay=d[0]+"/"+d[1]+"/"+d[2]
+    else:
+        ngay=d[1]+"/"+d[0]+"/20"+d[2]
+        
     return ngay
 
 def xoadiemdanh(malop,mamh,mgv,ca):
@@ -465,6 +469,7 @@ def timkiem_diemdanh(magv,ngay,mamh,lop,ca,q):
     cur.execute("SELECT sinhvien.MaSV, TenSV,DiemDanh FROM sinhvien, diemdanh WHERE diemdanh.MaSV=sinhvien.MaSV AND MaMH= "+str(mamh)+" AND MaGV ="+str(magv)+" AND Ca like '%"+str(ca)+"%' AND Ngay= '"+str(ngay)+"' AND MaLop = "+str(lop)+" AND (sinhvien.MaSV like '%"+str(q)+"%' OR TenSV like '%"+str(q)+"%' OR DiemDanh like '%"+str(q)+"%')" ) 
     rows = cur.fetchall()
     return rows
+
 
 
 
