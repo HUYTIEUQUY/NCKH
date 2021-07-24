@@ -12,17 +12,18 @@ conn = mysql.connector.connect(
 
 def DS_tkb(matkb):
     cur=conn.cursor()
-    cur.execute("SELECT Ngay, TenMH,TenGV,Ca FROM chitiettkb, monhoc, giangvien WHERE chitiettkb.MaMH=monhoc.MaMH AND giangvien.MaGV = chitiettkb.MaGV AND MaTKB ="+str(matkb)+" ORDER BY Ca" )
+    cur.execute("SELECT ROW_NUMBER() OVER ( ORDER BY Ngay) AS STT,Ngay, TenMH,TenGV,Ca FROM chitiettkb, monhoc, giangvien WHERE chitiettkb.MaMH=monhoc.MaMH AND giangvien.MaGV = chitiettkb.MaGV AND MaTKB ="+str(matkb)+" ORDER BY Ngay" )
     rows = cur.fetchall()
     return rows
 
-def timkiem_tkb(q):
+def timkiem_tkb(matkb, q):
   cur=conn.cursor()
-  cur.execute("SELECT Ngay,TenMH, TenGV,Ca FROM chitiettkb, monhoc, giangvien WHERE chitiettkb.MaMH=monhoc.MaMH AND giangvien.MaGV = chitiettkb.MaGV AND (TenMH like '%"+str(q)+"%' OR  TenGV like '%"+str(q)+"%' OR Ngay like '%"+str(q)+"%' OR Ca like '%"+str(q)+"%')")
+  cur.execute("SELECT ROW_NUMBER() OVER ( ORDER BY Ngay) AS STT, Ngay,TenMH, TenGV,Ca FROM chitiettkb, monhoc, giangvien WHERE chitiettkb.MaMH=monhoc.MaMH AND giangvien.MaGV = chitiettkb.MaGV AND MaTKB ="+str(matkb)+" AND (TenMH like '%"+str(q)+"%' OR  TenGV like '%"+str(q)+"%' OR Ngay like '%"+str(q)+"%' OR Ca like '%"+str(q)+"%')")
   rows = cur.fetchall()
   return rows
 
-def xoa_dong_ds(ngay,monhoc,gv,ca):
+
+def xoa_dong_tkb(ngay,monhoc,gv,ca):
   cur=conn.cursor()
   cur.execute("DELETE FROM chitiettkb WHERE Ngay like '"+str(ngay)+"' AND MaMH = "+str(monhoc)+" AND MaGV="+str(gv)+" AND Ca ='"+str(ca)+"'")
   conn.commit()

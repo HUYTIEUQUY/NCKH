@@ -48,8 +48,9 @@ def main():
         csdl_tkb.suatkb(data_matkb.get(),malop)
         khoiphuc()
     def xem():
+        malop=csdl.tenlop_thanh_ma(data_lop.get())
         win.destroy()
-        admin_chitiettkb.main(data_matkb.get())
+        admin_chitiettkb.main(data_matkb.get(),malop)
     def xoa():
         if(csdl_tkb.kt_chitiettkb(data_matkb.get())!=[]):
             messagebox.showerror("thông báo","Chi tiết thời khoá biểu vẫn đang tồn tại, Không xoá được")
