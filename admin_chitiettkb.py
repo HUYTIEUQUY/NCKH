@@ -6,7 +6,7 @@ from tkinter.ttk import Combobox
 from PIL import ImageTk
 from mysql.connector import cursor
 import csdl
-import csdl_chitiettkb
+import csdl_admin
 from tkinter import messagebox
 import dangnhap
 import socket
@@ -18,6 +18,7 @@ import admin_lop
 import admin_giangvien
 import admin_thongke
 import admin_monhoc
+import admin_tkb
 
 
 
@@ -48,11 +49,11 @@ def main(matkb,malop):
                 ca[i].set(0)
 
     def timkiem():
-        row=csdl_chitiettkb.timkiem_tkb(makhoa,ndtimkiem.get())
+        row=csdl_admin.timkiem_tkb(makhoa,ndtimkiem.get())
         update(row)
     def khoiphuc():
         ndtimkiem.set("")
-        row=csdl_chitiettkb.DS_tkb(makhoa)
+        row=csdl_admin.DS_tkb(makhoa)
         update(row)
     def them():
         magv=csdl.tengv_thanh_ma(data_gv.get())
@@ -63,9 +64,9 @@ def main(matkb,malop):
             if ca[i].get() >= 1:
                 data_ca += str(i)
         
-        if(csdl_chitiettkb.KT_lichgiang(ngay,magv,data_ca)== None):
-            if(csdl_chitiettkb.KT_lich_tkb(ngay,malop,data_ca)== None):
-                csdl_chitiettkb.them_tkb(matkb,magv,malop,mamh,ngay,data_ca)
+        if(csdl_admin.KT_lichgiang(ngay,magv,data_ca)== None):
+            if(csdl_admin.KT_lich_tkb(ngay,malop,data_ca)== None):
+                csdl_admin.them_tkb(matkb,magv,malop,mamh,ngay,data_ca)
                 messagebox.showinfo("thông báo", "Đã thêm 1 dòng vào thời khoá biểu ")
                 khoiphuc()
             else:
@@ -90,10 +91,10 @@ def main(matkb,malop):
                 data_ca += str(i)
 
         if(ngaycu.get()!= ""):
-            if(csdl_chitiettkb.KT_lichgiang(ngay,magv,data_ca)== None):
-                if(csdl_chitiettkb.KT_lich_tkb(ngay,malop,data_ca)== None):
-                    csdl_chitiettkb.them_tkb(matkb,magv,malop,mamh,ngay,data_ca)
-                    csdl_chitiettkb.xoa_dong_tkb(ngay_cu,mon_cu,gv_cu,ca_cu)
+            if(csdl_admin.KT_lichgiang(ngay,magv,data_ca)== None):
+                if(csdl_admin.KT_lich_tkb(ngay,malop,data_ca)== None):
+                    csdl_admin.them_tkb(matkb,magv,malop,mamh,ngay,data_ca)
+                    csdl_admin.xoa_dong_tkb(ngay_cu,mon_cu,gv_cu,ca_cu)
                     messagebox.showinfo("thông báo", "Đã thêm 1 dòng vào thời khoá biểu ")
                     khoiphuc()
                 else:
@@ -111,7 +112,7 @@ def main(matkb,malop):
         for i in range(len(ca)):
             if ca[i].get() >= 1:
                 data_ca += str(i)
-        csdl_chitiettkb.xoa_dong_tkb(ngay,mamh,magv,data_ca)
+        csdl_admin.xoa_dong_tkb(ngay,mamh,magv,data_ca)
         khoiphuc()
     def menuthongke():
         win.destroy()
@@ -142,6 +143,9 @@ def main(matkb,malop):
         cal.pack()
         btn=Button(f,image=img_btnchon,bg="white",command=lambda:chonngay(cal,btn),bd=0,highlightthickness=0)
         btn.pack()
+    def trolai():
+        win.destroy()
+        admin_tkb.main()
 
     win=Tk()
     win.geometry("1000x600+300+120")
@@ -161,6 +165,7 @@ def main(matkb,malop):
     img_btntimkiem=ImageTk.PhotoImage(file="img_admin/btn_timkiem.png")
     img_btnkhoiphuc=ImageTk.PhotoImage(file="img_admin/btn_khoiphuc.png")
     img_btnchonlich=ImageTk.PhotoImage(file="img_admin/chonlich.png")
+    img_btntrolai=ImageTk.PhotoImage(file="img_admin/btn_trolai.png")
     img_btnchon=ImageTk.PhotoImage(file="img_admin/btn_chon.png")
     img_menumonhoc=ImageTk.PhotoImage(file="img_admin/menu_monhoc.png")
 
@@ -172,7 +177,7 @@ def main(matkb,malop):
         d=file.read().split()
     email=d[0]
     makhoa=csdl.makhoa_tu_email(email)
-    tenlop=csdl_chitiettkb.ma_lop_thanh_ten(malop)
+    tenlop=csdl_admin.ma_lop_thanh_ten(malop)
     data_gv=StringVar()
     data_mon=StringVar()
     data_ngay=StringVar()
@@ -216,6 +221,8 @@ def main(matkb,malop):
     btnkhoiphuc.place(x=920,y=292)
     btnchonlich=Button(bg,image=img_btnchonlich,bd=0,highlightthickness=0,command=chonlich)
     btnchonlich.place(x=858,y=165)
+    btntrolai=Button(bg,image=img_btntrolai,bd=0,highlightthickness=0,command=trolai)
+    btntrolai.place(x=950,y=1)
     
     
  
@@ -226,8 +233,16 @@ def main(matkb,malop):
     Label(bg,text="",font=("Baloo Tamma",11),bg="white",textvariable=data_ngay).place(x=616,y=165)
     cbgv =Combobox(bg,textvariable=data_gv,font=("Times new roman",11), width=35,values=gv)
     cbgv.place(x=614,y=80)
+    Frame(bg,width=270,height=2,bg="white").place(x=614,y=80)
+    Frame(bg,width=3,height=25,bg="white").place(x=614,y=80)
+    Frame(bg,width=270,height=2,bg="white").place(x=614,y=102)
+
     cbmon =Combobox(bg,textvariable=data_mon,font=("Times new roman",11), width=35,values=mon)
-    cbmon.place(x=614,y=120)
+    cbmon.place(x=614,y=122)
+    Frame(bg,width=270,height=2,bg="white").place(x=614,y=122)
+    Frame(bg,width=3,height=25,bg="white").place(x=614,y=122)
+    Frame(bg,width=270,height=2,bg="white").place(x=614,y=144)
+
     
     ca=[]
     for i in range(5):
@@ -235,10 +250,10 @@ def main(matkb,malop):
         option.set(0)
         ca.append(option)
 
-    Checkbutton(bg,text="Ca 1",font=("Times new roman",14),variable=ca[1],bg="white").place(x=610,y=200)
-    Checkbutton(bg,text="Ca 2",font=("Times new roman",14),variable=ca[2],bg="white").place(x=680,y=200)
-    Checkbutton(bg,text="Ca 3",font=("Times new roman",14),variable=ca[3],bg="white").place(x=750,y=200)
-    Checkbutton(bg,text="Ca 4",font=("Times new roman",14),variable=ca[4],bg="white").place(x=810,y=200)
+    Checkbutton(bg,text="Ca 1",font=("Times new roman",11),variable=ca[1],bg="white").place(x=605,y=205)
+    Checkbutton(bg,text="Ca 2",font=("Times new roman",11),variable=ca[2],bg="white").place(x=680,y=205)
+    Checkbutton(bg,text="Ca 3",font=("Times new roman",11),variable=ca[3],bg="white").place(x=755,y=205)
+    Checkbutton(bg,text="Ca 4",font=("Times new roman",11),variable=ca[4],bg="white").place(x=820,y=205)
 
 
     f=Frame(bg)
@@ -262,7 +277,7 @@ def main(matkb,malop):
     tv.place(x=400,y=340)
     tv.bind('<Double 1>', getrow)
 
-    row=csdl_chitiettkb.DS_tkb(matkb)
+    row=csdl_admin.DS_tkb(matkb)
     update(row)
     win.mainloop()
 

@@ -5,7 +5,7 @@ from tkinter import PhotoImage
 from tkinter.ttk import Combobox
 from PIL import ImageTk
 import csdl
-import csdl_gv
+import csdl_admin
 from tkinter import messagebox
 import dangnhap
 import socket
@@ -35,25 +35,25 @@ def main():
 
     def khoiphuc():
         ndtimkiem.set("")
-        row=csdl_gv.banggv(makhoa)
+        row=csdl_admin.banggv(makhoa)
         update(row)
     def timkiem():
-        row=csdl_gv.timkiem_gv(makhoa,ndtimkiem.get())
+        row=csdl_admin.timkiem_gv(makhoa,ndtimkiem.get())
         update(row)
     def them():
-        csdl_gv.themgv(makhoa,data_email.get(),data_ngaysinh.get(),data_ten.get())
+        csdl_admin.themgv(makhoa,data_email.get(),data_ngaysinh.get(),data_ten.get())
         data_ten.set("")
         data_email.set("")
         data_ngaysinh.set("")
         khoiphuc()
     def xoa():
-        csdl_gv.xoagv(data_magv.get(),data_email.get())
+        csdl_admin.xoagv(data_magv.get(),data_email.get())
         data_ten.set("")
         data_email.set("")
         data_ngaysinh.set("")
         khoiphuc()
     def sua():
-        csdl_gv.suagv(data_magv.get(),data_ten.get(),data_ngaysinh.get())
+        csdl_admin.suagv(data_magv.get(),data_ten.get(),data_ngaysinh.get())
         data_ten.set("")
         data_email.set("")
         data_ngaysinh.set("")
@@ -182,7 +182,7 @@ def main():
     tv.heading(5,text="Email")
     tv.place(x=370,y=340)
     tv.bind('<Double 1>', getrow)
-    row=csdl_gv.banggv(makhoa)
+    row=csdl_admin.banggv(makhoa)
 
 
     update(row)

@@ -4,7 +4,7 @@ from tkinter import PhotoImage
 from tkinter.ttk import Combobox
 from PIL import ImageTk
 import csdl
-import csdl_lop
+import csdl_admin
 from tkinter import messagebox
 import dangnhap
 import socket
@@ -27,15 +27,15 @@ def main():
             tv.insert('','end',values=i)
     def them():
         ten=tenlop.get()
-        csdl_lop.themlop(makhoa,ten)
-        row=csdl_lop.banglop(makhoa)
+        csdl_admin.themlop(makhoa,ten)
+        row=csdl_admin.banglop(makhoa)
         messagebox.showinfo("thông báo","Thêm '"+ten+"' thành công")
         update(row)
     def xoa():
         ten=tenlop.get()
-        if csdl_lop.kt_loptontai(malop.get()) == True:
-            csdl_lop.xoalop(malop.get())
-            row=csdl_lop.banglop(makhoa)
+        if csdl_admin.kt_loptontai(malop.get()) == True:
+            csdl_admin.xoalop(malop.get())
+            row=csdl_admin.banglop(makhoa)
             messagebox.showinfo("thông báo","Xoá '"+ten+"' thành công")
             update(row)
             tenlop.set("")
@@ -44,7 +44,7 @@ def main():
     def sua():
         tenmoi=tenlop.get()
         malop1=malop.get()
-        csdl_lop.sua(malop1,tenmoi)
+        csdl_admin.sua(malop1,tenmoi)
         messagebox.showinfo("thông báo","Đã đổi tên lớp thành công")
         khoiphuc()
     def getrow(event):
@@ -54,10 +54,10 @@ def main():
         malop.set(item['values'][1])
     def khoiphuc():
         ndtimkiem.set("")
-        row=csdl_lop.banglop(makhoa)
+        row=csdl_admin.banglop(makhoa)
         update(row)
     def timkiem():
-        row=csdl_lop.timkiem_lop(makhoa,ndtimkiem.get())
+        row=csdl_admin.timkiem_lop(makhoa,ndtimkiem.get())
         update(row)
     def menuthongke():
         win.destroy()
@@ -70,7 +70,7 @@ def main():
         admin_giangvien.main()
     def menumonhoc():
         win.destroy()
-        admin_giangvien.main()
+        admin_monhoc.main()
     def menudangxuat():
         ten_thiet_bi = socket.gethostname()
         file=open(ten_thiet_bi+".txt","w")
@@ -160,7 +160,7 @@ def main():
     tv.heading(3,text="Tên Lớp")
     tv.place(x=390,y=320)
     tv.bind('<Double 1>', getrow)
-    row=csdl_lop.banglop(makhoa)
+    row=csdl_admin.banglop(makhoa)
     update(row)
     win.mainloop()
 

@@ -5,7 +5,7 @@ from tkinter.ttk import Combobox
 from PIL import ImageTk
 from mysql.connector import cursor
 import csdl
-import csdl_tkb
+import csdl_admin
 from tkinter import messagebox
 import dangnhap
 import socket
@@ -32,30 +32,30 @@ def main():
         data_lop.set(item['values'][2])
         data_matkb.set(item['values'][1])
     def timkiem():
-        row=csdl_tkb.timkiem_tkb(makhoa,ndtimkiem.get())
+        row=csdl_admin.timkiem_tkb(makhoa,ndtimkiem.get())
         update(row)
     def khoiphuc():
         ndtimkiem.set("")
-        row=csdl_tkb.bangtkb(makhoa)
+        row=csdl_admin.bangtkb(makhoa)
         update(row)
     def them():
         malop=csdl.tenlop_thanh_ma(data_lop.get())
         ngaylap=csdl.ngay()
-        csdl_tkb.themtkb(malop,ngaylap)
+        csdl_admin.themtkb(malop,ngaylap)
         khoiphuc()
     def sua():
         malop=csdl.tenlop_thanh_ma(data_lop.get())
-        csdl_tkb.suatkb(data_matkb.get(),malop)
+        csdl_admin.suatkb(data_matkb.get(),malop)
         khoiphuc()
     def xem():
         malop=csdl.tenlop_thanh_ma(data_lop.get())
         win.destroy()
         admin_chitiettkb.main(data_matkb.get(),malop)
     def xoa():
-        if(csdl_tkb.kt_chitiettkb(data_matkb.get())!=[]):
+        if(csdl_admin.kt_chitiettkb(data_matkb.get())!=[]):
             messagebox.showerror("thông báo","Chi tiết thời khoá biểu vẫn đang tồn tại, Không xoá được")
         else:
-            csdl_tkb.xoatkb(data_matkb.get())
+            csdl_admin.xoatkb(data_matkb.get())
             messagebox.showinfo("thông báo","xoá thành công")
             khoiphuc()
     def menuthongke():
@@ -152,6 +152,10 @@ def main():
     cb_lop=Combobox(bg,textvariable=data_lop,font=("Baloo Tamma",12),values=lop,width=30)
     cb_lop.current(0)
     cb_lop.place(x=570,y=130)
+    Frame(bg,width=300,height=2,bg="white").place(x=570,y=130)
+    Frame(bg,width=3,height=25,bg="white").place(x=570,y=130)
+    Frame(bg,width=300,height=2,bg="white").place(x=570,y=153)
+
     Entry(bg,font=("Baloo Tamma",11),width=28,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=652,y=294)
 
 
@@ -170,7 +174,7 @@ def main():
     tv.place(x=420,y=340)
     tv.bind('<Double 1>', getrow)
 
-    row=csdl_tkb.bangtkb(makhoa)
+    row=csdl_admin.bangtkb(makhoa)
     update(row)
     win.mainloop()
 
