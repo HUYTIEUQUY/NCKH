@@ -10,10 +10,6 @@ import csdl_admin
 from tkinter import messagebox
 import dangnhap
 import socket
-import mysql.connector
-import pickle
-import cv2
-import face_recognition
 import admin_lop
 import admin_giangvien
 import admin_thongke
@@ -49,11 +45,17 @@ def main(matkb,malop):
                 ca[i].set(0)
 
     def timkiem():
-        row=csdl_admin.timkiem_tkb(makhoa,ndtimkiem.get())
+        row=csdl_admin.timkiem_dongtkb(matkb,ndtimkiem.get())
         update(row)
     def khoiphuc():
         ndtimkiem.set("")
-        row=csdl_admin.DS_tkb(makhoa)
+        data_ca.set("")
+        data_gv.set("")
+        data_mon.set("")
+        data_ngay.set("")
+        for i in range(5):
+            ca[i].set(0)
+        row=csdl_admin.DS_tkb(matkb)
         update(row)
     def them():
         magv=csdl.tengv_thanh_ma(data_gv.get())
@@ -63,8 +65,12 @@ def main(matkb,malop):
         for i in range(len(ca)):
             if ca[i].get() >= 1:
                 data_ca += str(i)
-        
-        if(csdl_admin.KT_lichgiang(ngay,magv,data_ca)== None):
+        if len(data_ca)==2:
+            ca1=data_ca[0:1]
+            ca2=data_ca[1:2]
+        else:
+            ca1=ca2=data_ca
+        if(csdl_admin.KT_lichgiang(ngay,magv,ca1)== None and csdl_admin.KT_lichgiang(ngay,magv,ca2)== None):
             if(csdl_admin.KT_lich_tkb(ngay,malop,data_ca)== None):
                 csdl_admin.them_tkb(matkb,magv,malop,mamh,ngay,data_ca)
                 messagebox.showinfo("thông báo", "Đã thêm 1 dòng vào thời khoá biểu ")
@@ -80,7 +86,7 @@ def main(matkb,malop):
         mon_cu=csdl.tenmon_thanh_ma(moncu.get())
         gv_cu=csdl.tengv_thanh_ma(gvcu.get())
         ca_cu=cacu.get()
-
+        csdl_admin.xoa_dong_tkb(ngay_cu,mon_cu,gv_cu,ca_cu)
         #du liệu cập nhật
         magv=csdl.tengv_thanh_ma(data_gv.get())
         mamh = csdl.tenmon_thanh_ma(data_mon.get())
@@ -90,19 +96,29 @@ def main(matkb,malop):
             if ca[i].get() >= 1:
                 data_ca += str(i)
 
+
+        if len(data_ca)==2:
+            ca1=data_ca[0:1]
+            ca2=data_ca[1:2]
+        else:
+            ca1=ca2=data_ca
+        
         if(ngaycu.get()!= ""):
-            if(csdl_admin.KT_lichgiang(ngay,magv,data_ca)== None):
+            if(csdl_admin.KT_lichgiang(ngay,magv,ca1)== None and csdl_admin.KT_lichgiang(ngay,magv,ca2)== None):
                 if(csdl_admin.KT_lich_tkb(ngay,malop,data_ca)== None):
                     csdl_admin.them_tkb(matkb,magv,malop,mamh,ngay,data_ca)
-                    csdl_admin.xoa_dong_tkb(ngay_cu,mon_cu,gv_cu,ca_cu)
+                    
                     messagebox.showinfo("thông báo", "Đã thêm 1 dòng vào thời khoá biểu ")
                     khoiphuc()
                 else:
                     messagebox.showerror("thông báo","Lớp đã có lịch học !")
+                    csdl_admin.them_tkb(matkb,gv_cu,malop,mon_cu,ngay,ca_cu)
             else:
                 messagebox.showerror("thông báo","Giảng viên đã có lịch dạy !")
+                csdl_admin.them_tkb(matkb,gv_cu,malop,mon_cu,ngay,ca_cu)
         else:
             messagebox.showerror("thông báo","không tìm thấy dữ liệu cần sửa !")
+            csdl_admin.them_tkb(matkb,gv_cu,malop,mon_cu,ngay,ca_cu)
 
     def xoa():
         magv=csdl.tengv_thanh_ma(data_gv.get())
@@ -222,7 +238,7 @@ def main(matkb,malop):
     btnchonlich=Button(bg,image=img_btnchonlich,bd=0,highlightthickness=0,command=chonlich)
     btnchonlich.place(x=858,y=165)
     btntrolai=Button(bg,image=img_btntrolai,bd=0,highlightthickness=0,command=trolai)
-    btntrolai.place(x=950,y=1)
+    btntrolai.place(x=950,y=2)
     
     
  
@@ -278,6 +294,9 @@ def main(matkb,malop):
     tv.bind('<Double 1>', getrow)
 
     row=csdl_admin.DS_tkb(matkb)
+
+   
     update(row)
+    print(matkb)
     win.mainloop()
 

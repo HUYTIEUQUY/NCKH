@@ -258,10 +258,7 @@ def main():
     if csdl.gvdiemdanh(magv,l,i,i,i)== True:
         btnthongbao=Button(bg,image=ing_btnthongbao,bd=0,highlightthickness=0,command=diemdanhbulai)
         btnthongbao.place(x=943,y=0)
-        lbstb1=Label(bg,text=len(l),fg="red",font=("Arial",10),bg="#FDE3EA")
-        lbstb1.place(x=980,y=0)
-
-    else:
-        return
+        lbstb1=Label(bg,text=len(l),fg="red",font=("Arial",10),bg="white")
+        lbstb1.place(x=978,y=2)
     win.mainloop()
 

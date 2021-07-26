@@ -2,17 +2,11 @@ from tkinter import *
 from tkcalendar import *
 from tkinter import ttk
 from tkinter import PhotoImage
-from tkinter.ttk import Combobox
 from PIL import ImageTk
 import csdl
 import csdl_admin
-from tkinter import messagebox
 import dangnhap
 import socket
-import mysql.connector
-import pickle
-import cv2
-import face_recognition
 import admin_lop
 import admin_thongke
 import admin_tkb

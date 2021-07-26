@@ -118,8 +118,8 @@ def main():
             embed_dictt={}
 
 
-        # face_locations = face_recognition.face_locations(file1)
-        # print(face_locations)
+        face_locations = face_recognition.face_locations(file1)
+        print(face_locations)
 
         for i in range(5):
             key = cv2. waitKey(1)
@@ -177,7 +177,6 @@ def main():
     ing_menutaikhoan=ImageTk.PhotoImage(file="img/menutaikhoan.png")
     ing_menuthongke=ImageTk.PhotoImage(file="img/menuthongke.png")
     ing_btndangxuat=ImageTk.PhotoImage(file="img/btndangxuat.png")
-    ing_frame=ImageTk.PhotoImage(file="img/frame.png")
 
     bg=Canvas(win,width=1000,height=600,bg="green")
     bg.pack(side="left",padx=0)
@@ -203,8 +202,8 @@ def main():
     cb_lop=Combobox(bg,width=27,values=data_lop, font=("Baloo Tamma",12))
     cb_lop.current(0)
     cb_lop.place(x=580,y=90)
-    Frame(bg,width=280,height=5,bg= "white").place(x=570,y=90)
-    Frame(bg,width=276,height=5,bg= "white").place(x=570,y=112)
+    Frame(bg,width=287,height=5,bg= "white").place(x=570,y=90)
+    Frame(bg,width=276,height=5,bg= "white").place(x=570,y=110)
     Frame(bg,width=5,height=20,bg= "white").place(x=577,y=90)
 
     txt_masv=Entry(bg,width=30,bd=0,font=("Baloo Tamma",12))
@@ -218,8 +217,8 @@ def main():
     txt_tenmahoa.place(x=578,y=237)
 
 
-    btnthem=Button(bg,image=ing_btnthem,bd=0,highlightthickness=0,command=themdlkhuonmat)
-    btnthem.place(x=557,y=464)
+    # btnthem=Button(bg,image=ing_btnthem,bd=0,highlightthickness=0,command=themdlkhuonmat)
+    # btnthem.place(x=557,y=464)
 
     
 
@@ -240,16 +239,16 @@ def main():
 
     tengv=csdl.tim_tengv_tu_email()
     Label(bg,text=tengv,font=("Baloo Tamma",14),fg="#A672BB",bg="white").place(x=45,y=40)
-    # i=1
-    # Button(bg,image=ing_btnchonanh,bd=0,highlightthickness=0,command=lambda:chonanh(i)).place(x=583,y=281)
+    i=1
+    Button(bg,image=ing_btnchonanh,bd=0,highlightthickness=0,command=lambda:chonanh(i)).place(x=583,y=281)
 
     f=Frame(bg)
     f.place(x=330,y=330)
-    Label(bg,image=ing_frame,bd=0,highlightthickness=0).place(x=389,y=229)
-
+    
 
     
 
 
     win.mainloop()
 
+main()

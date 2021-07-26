@@ -8,10 +8,6 @@ import csdl_admin
 from tkinter import messagebox
 import dangnhap
 import socket
-import mysql.connector
-import pickle
-import cv2
-import face_recognition
 import admin_giangvien
 import admin_thongke
 import admin_tkb
@@ -54,6 +50,7 @@ def main():
         malop.set(item['values'][1])
     def khoiphuc():
         ndtimkiem.set("")
+        tenlop.set("")
         row=csdl_admin.banglop(makhoa)
         update(row)
     def timkiem():

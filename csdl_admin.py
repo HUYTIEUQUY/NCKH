@@ -57,7 +57,7 @@ def DS_tkb(matkb):
     rows = cur.fetchall()
     return rows
 
-def timkiem_tkb(matkb, q):
+def timkiem_dongtkb(matkb, q):
   cur=conn.cursor()
   cur.execute("SELECT ROW_NUMBER() OVER ( ORDER BY Ngay) AS STT, Ngay,TenMH, TenGV,Ca FROM chitiettkb, monhoc, giangvien WHERE chitiettkb.MaMH=monhoc.MaMH AND giangvien.MaGV = chitiettkb.MaGV AND MaTKB ="+str(matkb)+" AND (TenMH like '%"+str(q)+"%' OR  TenGV like '%"+str(q)+"%' OR Ngay like '%"+str(q)+"%' OR Ca like '%"+str(q)+"%')")
   rows = cur.fetchall()
@@ -91,7 +91,6 @@ def ma_lop_thanh_ten(ma):
     return a
 
 def KT_lichgiang (ngay,magv,ca):
-    
     cur = conn.cursor()
     cur.execute("SELECT MaMH FROM chitiettkb where  Ngay= '"+str(ngay)+"'  AND MaGV = "+str(magv)+" AND Ca like '%"+str(ca)+"%'")
     while True:
