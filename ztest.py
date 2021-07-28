@@ -1,27 +1,35 @@
-from tkinter import *
-from PIL import Image, ImageTk
-from tkinter import filedialog
-import os
+import pickle
+import shutil
 
-def showimg():
-    fln=filedialog.askopenfilename(initialdir=os.getcwd(),title="select image file", filetypes=(("JPG file","*.jpg"),("PNG file","*.png"),("All file","*.*")))
-    img=Image.open(fln)
-    img.thumbnail((150,150))
-    img=ImageTk.PhotoImage(img)
-    lb.config(image=img)
-    lb.image=img
+f=open("mahoa/Cong_nghe_thong_tin_k19mahoa.pkl","rb")
+ref_dictt=pickle.load(f)
+print(ref_dictt)
+f.close()
 
-win = Tk()
-win.title("cHỌN ẢNH")
-win.geometry("500x500")
 
-fg=Frame(win)
-fg.pack(side=BOTTOM,padx=15,pady=15)
+# shutil.copyfile('C:/Users/Dell/Pictures/Camera Roll/a.jpg','./img/a.jpg')
 
-lb=Label(win)
-lb.pack()
+# ref_dictt.pop('114')
+# capnhat={}
+# capnhat[114]=ref_dictt.get('114')
 
-btn = Button(fg,text="Browse Image",command=showimg)
-btn.pack(side=LEFT )
+# f=open("mahoa/Cong_nghe_thong_tin_k19mahoa.pkl","wb+")
+# ref_dictt=pickle.load(f)
+# capnhat=ref_dictt.pop("117")
+# pickle.dump(capnhat,f)
+# f.close()
 
-win.mainloop()
+# with open("mahoa/Cong_nghe_thong_tin_k19mahoa.pkl","rb") as f:
+#     ref_dictt=pickle.load(f)
+#     capnhat=ref_dictt.pop("114")
+
+# del ref_dictt[2]
+
+# file= open("mahoa/Cong_nghe_thong_tin_k19mahoa.pkl","wb") 
+# pickle.dump(ref_dictt,file)
+
+# with open("mahoa/Cong_nghe_thong_tin_K19mahoa.pkl","rb") as f:
+#     ref_dictt=pickle.load(f)
+# 
+# capnhat=ref_dictt.keys()
+# print(capnhat)

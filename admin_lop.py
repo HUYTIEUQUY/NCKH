@@ -24,17 +24,14 @@ def main():
     def them():
         ten=tenlop.get()
         csdl_admin.themlop(makhoa,ten)
-        row=csdl_admin.banglop(makhoa)
         messagebox.showinfo("thông báo","Thêm '"+ten+"' thành công")
-        update(row)
+        khoiphuc()
     def xoa():
         ten=tenlop.get()
         if csdl_admin.kt_loptontai(malop.get()) == True:
             csdl_admin.xoalop(malop.get())
-            row=csdl_admin.banglop(makhoa)
             messagebox.showinfo("thông báo","Xoá '"+ten+"' thành công")
-            update(row)
-            tenlop.set("")
+            khoiphuc()
         else:
             messagebox.showerror("thông báo", "Xoá lớp thất bại")
     def sua():
