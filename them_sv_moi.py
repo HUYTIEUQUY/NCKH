@@ -1,9 +1,12 @@
 from tkinter import *
+from tkinter import ttk
 from tkinter import filedialog
 from tkinter import PhotoImage
 from tkinter.ttk import Combobox
 from PIL import Image, ImageTk
 import os
+import shutil
+from mysql.connector.errors import ProgrammingError
 import csdl
 from tkinter import messagebox
 import dangnhap
@@ -16,11 +19,68 @@ import diemdanhsv
 import thongke
 import taikhoan
 import re
+import xlsxwriter
 
 
 
 
 def main():
+    
+    def khoiphuc():
+        ma.set("")
+        ten.set("")
+        malop=csdl.tenlop_thanh_ma(cb_lop.get())
+        row=csdl.danhsachsinhvien(malop)
+        update(row)
+    def update(row):
+        tv.delete(*tv.get_children())
+        for i in row:
+            tv.insert('','end',values=i)
+
+    def update(event):
+        malop=csdl.tenlop_thanh_ma(cb_lop.get())
+        row=csdl.danhsachsinhvien(malop)
+        tv.delete(*tv.get_children())
+        for i in row:
+            tv.insert('','end',values=i)
+
+    def getrow(event):
+        rowid=tv.identify_row(event.y)
+        item=tv.item(tv.focus())
+        ten.set(item['values'][2])
+        ma.set(item['values'][1])
+        manganh=csdl.anh(ma.get())
+        anh=manganh[0]
+        gananh(anh)
+
+    def gananh(s):
+        manganh=s.split()
+        for i in range(5):
+            img=Image.open("img_anhsv/"+manganh[i])
+            img.thumbnail((100,100))
+            img=ImageTk.PhotoImage(img)
+            
+            if(i==0):
+                lb1.config(image=img)
+                lb1.image=img
+            if(i==1):
+                lb2.config(image=img)
+                lb2.image=img
+            if(i==2):
+                lb3.config(image=img)
+                lb3.image=img
+            if(i==3):
+                lb4.config(image=img)
+                lb4.image=img
+            if(i==4):
+                lb5.config(image=img)
+                lb5.image=img
+            
+
+
+
+    a=[]
+    
     def khong_dau(s):
         s = re.sub(r'[àáạảãâầấậẩẫăằắặẳẵ]', 'a', s)
         s = re.sub(r'[ÀÁẠẢÃĂẰẮẶẲẴÂẦẤẬẨẪ]', 'A', s)
@@ -37,27 +97,26 @@ def main():
         s = re.sub(r'[Đ]', 'D', s)
         s = re.sub(r'[đ]', 'd', s)
         return s
-    def chonanh(i):
-        lb=Label(f)
-        lb.pack(side='left')
-        if i==1:
-            x=file1=filedialog.askopenfilename(initialdir=os.getcwd(),title="select image file", filetypes=(("JPG file","*.jpg"),("PNG file","*.png"),("All file","*.*")))
-        elif i==2:
-            x=file2=filedialog.askopenfilename(initialdir=os.getcwd(),title="select image file", filetypes=(("JPG file","*.jpg"),("PNG file","*.png"),("All file","*.*")))
-        elif i==3:
-            x=file3=filedialog.askopenfilename(initialdir=os.getcwd(),title="select image file", filetypes=(("JPG file","*.jpg"),("PNG file","*.png"),("All file","*.*")))
-        else:
-            x=file4=filedialog.askopenfilename(initialdir=os.getcwd(),title="select image file", filetypes=(("JPG file","*.jpg"),("PNG file","*.png"),("All file","*.*")))
 
+    def sua_anh(lb,i,btn):
+        a.pop(i-1)
+        print(a)
+        chonanh(lb,i,btn)
+
+    def chonanh(lb,i,btn):
+        x= filedialog.askopenfilename(initialdir=os.getcwd(),title="select image file", filetypes=(("JPG file","*.jpg"),("PNG file","*.png"),("All file","*.*")))
+        shutil.copyfile(x,"./img_anhsv/"+str(ma.get())+str(i)+".png")
+
+        a.insert(i-1,str(ma.get())+str(i)+".png")
         img=Image.open(x)
-        img.thumbnail((150,150))
+        img.thumbnail((80,100))
         img=ImageTk.PhotoImage(img)
         lb.config(image=img)
         lb.image=img
-        if i==4:
-            i=4
-        else:
-            i=i+1
+        btn.config(command=lambda:sua_anh(lb,i,btn) )
+         
+        
+        
     def menutaikhoan():
         win.destroy()
         taikhoan.main()
@@ -74,113 +133,120 @@ def main():
         file.close()
         win.destroy()
         dangnhap.main()
+    
     def themdlkhuonmat():
-        messagebox.showinfo("thông báo","bấm s để chụp")
-        
-        def insertOrUpdate(id, name,malop):
-           
-
-            conn = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="",
-            database="diemdanhsinhvien"
-            )
-            cur = conn.cursor()
-            cur.execute("select * from sinhvien where MaSV="+str(id))
-            Cusror = cur.fetchall()
-
-            isRecordExist = 0 #kiểm tra nếu có ID trong database rồi thì = 1 nếu chưa thì giữ =0
-            for row in Cusror:
-                isRecordExist = 1
-            
-            if(isRecordExist == 0):
-                cur.execute("insert into sinhvien(MaSV,TenSV,MaLop) values("+str(id)+",'"+str(name)+"',"+str(malop)+")")
-            else:
-                status=messagebox.askyesno("Thông báo","ID đã tồn tại! Bạn có muốn update tên ?")
-                if status == True:
-                    cur.execute("update sinhvien set TenSV='"+str(name)+"'where MaSV="+str(id))
-                else:
-                    win.destroy()
-                    main()
-                    
-                   
-           
-            conn.commit()
-            conn.close()
-            #================== kết thúc hàm insertOrUpdate
         id=txt_masv.get()
-        name=khong_dau(txt_hoten.get())
+        name=txt_hoten.get()
+        namemahoa=khong_dau(name)
         malop=csdl.tenlop_thanh_ma(cb_lop.get())
         #thêm id , name vào co sở dữ liệu
-        insertOrUpdate(id,name,malop)
-        lop=khong_dau(cb_lop.get())
-        lop=lop.replace(" ","_")
+        # insertOrUpdate(id,name,malop)
+
+        lop=cb_lop.get().replace(" ","_")
+        lopmahoa=khong_dau(lop)
         try:
-            f=open("mahoa/"+lop+".pkl","rb")
+            f=open("mahoa/"+lopmahoa+".pkl","rb")
             ref_dictt=pickle.load(f)
             f.close()
         except:
             ref_dictt={}
-        ref_dictt[id]=name
-        f=open("mahoa/"+lop+".pkl","wb")
+        ref_dictt[id]=namemahoa
+        f=open("mahoa/"+lopmahoa+".pkl","wb")
         pickle.dump(ref_dictt,f)
         f.close()
-
-
         try:
-            f=open("mahoa/"+lop+"mahoa.pkl","rb")
+            f=open("mahoa/"+lopmahoa+"mahoa.pkl","rb")
             embed_dictt=pickle.load(f)
+
             f.close()
         except:
             embed_dictt={}
-
-
-        # face_locations = face_recognition.face_locations(file1)
-        # print(face_locations)
-
-        for i in range(5):
-            key = cv2. waitKey(1)
-            webcam = cv2.VideoCapture(0)
-            while True:
-            
-                check, frame = webcam.read()
-                cv2.imshow("Capturing", frame)
-                # Thay đổi kích thước trong opencv
-                #frame: màn hình là hình ảnh đầu vào
-                #(0, 0), fx=0.25, fy=0.25 : kích thước mong muốn cho hình ảnh đầu
-                small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
-                rgb_small_frame = small_frame[:, :, ::-1] # Chuyển đổi hình ảnh từ màu BGR (OpenCV sử dụng) sang màu RGB (face_recognition sử dụng)
         
-                key = cv2.waitKey(1)
-                if key == ord('s') : 
-                    face_locations = face_recognition.face_locations(rgb_small_frame)
-                    if face_locations != []: #nếu có khuôn mặt
-                        face_encoding = face_recognition.face_encodings(frame)[0] #mã hoá và lưu vào biến face_encoding
-                        if id in embed_dictt: #Nếu id đã tồn tại thì cộng thêm hình ảnh đã mã hoá vào
-                            embed_dictt[id]+=[face_encoding]
-                        else:#Nếu chưa tồn tại thì khởi tạo với "id"="dữ liệu hình ảnh mã hoá"
-                            embed_dictt[id]=[face_encoding]
-                        if(i==4):
-                            messagebox.showinfo("thông báo", "Đã lưu mã hoá khuôn mặt")
-                        webcam.release()
-                        
-                        cv2.destroyAllWindows()
-                        break
-                    
-                elif key == ord('q'):
-                    print("Turning off camera.")
-                    webcam.release()
-                    print("Camera off.")
-                    print("Program ended.")
-                    cv2.destroyAllWindows() # thoát khỏi camera
-                    break
-                    
+        
+        anh=""
+        for i in range(len(a)):
+            anh=anh+" "+str(a[i])
+            file1_image = face_recognition.load_image_file("img_anhsv/"+a[i])
+            file1_face_encoding = face_recognition.face_encodings(file1_image)[0]
+            if id in embed_dictt:
+                embed_dictt[id]+=[file1_face_encoding]
+            else:
+                embed_dictt[id]=[file1_face_encoding]
+        
 
-
-        f=open("mahoa/"+lop+"mahoa.pkl","wb")
+        f=open("mahoa/"+lopmahoa+"mahoa.pkl","wb")
         pickle.dump(embed_dictt,f)
         f.close()
+        csdl.insertOrUpdate(id,name,malop,anh)
+
+        ma.set("")
+        ten.set("")
+        lb1.config(image="")
+        img=Image.open("aa.jpg")
+        img.thumbnail((100,100))
+        img=ImageTk.PhotoImage(img)
+        
+        lb1.config(image=img)
+        lb1.image=img
+
+        lb2.config(image=img)
+        lb2.image=img
+
+        lb3.config(image=img)
+        lb3.image=img
+
+        lb4.config(image=img)
+        lb4.image=img
+
+        lb5.config(image=img)
+        lb5.image=img
+        malop=csdl.tenlop_thanh_ma(cb_lop.get())
+        row=csdl.danhsachsinhvien(malop)
+        cb_lop.bind('<<ComboboxSelected>>', update)
+        khoiphuc()
+        messagebox.showinfo("thông báo","Đã thêm sinh viên vào danh sách")
+        # for i in range(5):
+        #     key = cv2. waitKey(1)
+        #     webcam = cv2.VideoCapture(0)
+        #     while True:
+            
+        #         check, frame = webcam.read()
+        #         cv2.imshow("Capturing", frame)
+        #         # Thay đổi kích thước trong opencv
+        #         #frame: màn hình là hình ảnh đầu vào
+        #         #(0, 0), fx=0.25, fy=0.25 : kích thước mong muốn cho hình ảnh đầu
+        #         small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
+        #         rgb_small_frame = small_frame[:, :, ::-1] # Chuyển đổi hình ảnh từ màu BGR (OpenCV sử dụng) sang màu RGB (face_recognition sử dụng)
+        
+        #         key = cv2.waitKey(1)
+        #         if key == ord('s') : 
+        #             face_locations = face_recognition.face_locations(rgb_small_frame)
+        #             if face_locations != []: #nếu có khuôn mặt
+        #                 face_encoding = face_recognition.face_encodings(frame)[0] #mã hoá và lưu vào biến face_encoding
+        #                 if id in embed_dictt: #Nếu id đã tồn tại thì cộng thêm hình ảnh đã mã hoá vào
+        #                     embed_dictt[id]+=[face_encoding]
+        #                 else:#Nếu chưa tồn tại thì khởi tạo với "id"="dữ liệu hình ảnh mã hoá"
+        #                     embed_dictt[id]=[face_encoding]
+        #                 if(i==4):
+        #                     messagebox.showinfo("thông báo", "Đã lưu mã hoá khuôn mặt")
+        #                 webcam.release()
+                        
+        #                 cv2.destroyAllWindows()
+        #                 break
+                    
+        #         elif key == ord('q'):
+        #             print("Turning off camera.")
+        #             webcam.release()
+        #             print("Camera off.")
+        #             print("Program ended.")
+        #             cv2.destroyAllWindows() # thoát khỏi camera
+        #             break
+                    
+
+
+        # f=open("mahoa/"+lop+"mahoa.pkl","wb")
+        # pickle.dump(embed_dictt,f)
+        # f.close()
 
     win=Tk()
     win.geometry("1000x600+300+120")
@@ -188,14 +254,19 @@ def main():
     win.config(bg="green")
     win.title("Menu tkinter")
     img_bg=ImageTk.PhotoImage(file="img/bg_themdl.png")
-    ing_btnthem=ImageTk.PhotoImage(file="img/btnthemdulieukhuonmat.png")
+ 
     ing_btnchonanh=ImageTk.PhotoImage(file="img/chon_anh.png")
     ing_menuthem=ImageTk.PhotoImage(file="img/menuthemdl.png")
     ing_menudiemdanh=ImageTk.PhotoImage(file="img/menudiemdanh.png")
     ing_menutaikhoan=ImageTk.PhotoImage(file="img/menutaikhoan.png")
     ing_menuthongke=ImageTk.PhotoImage(file="img/menuthongke.png")
     ing_btndangxuat=ImageTk.PhotoImage(file="img/btndangxuat.png")
-    ing_frame=ImageTk.PhotoImage(file="img/frame.png")
+    ing_chonanh=ImageTk.PhotoImage(file="img/btnchhonanh.png")
+    img_btnthem=ImageTk.PhotoImage(file="img_admin/btn_them.png")
+    img_btnsua=ImageTk.PhotoImage(file="img_admin/btn_sua.png")
+    img_btnxoa=ImageTk.PhotoImage(file="img_admin/btn_xoa.png")
+    img_btntimkiem=ImageTk.PhotoImage(file="img_admin/btn_timkiem.png")
+    img_btnkhoiphuc=ImageTk.PhotoImage(file="img_admin/btn_khoiphuc.png")
 
     bg=Canvas(win,width=1000,height=600,bg="green")
     bg.pack(side="left",padx=0)
@@ -204,40 +275,49 @@ def main():
     #chọn lớp
     ten_thiet_bi = socket.gethostname()
     d=[]
-    d=[]
+    ma=StringVar()
+    ten=StringVar()
+    lop=StringVar()
+    
+
     with open(ten_thiet_bi+".txt","r") as file:
         d=file.read().split()
     makhoa=csdl.makhoa_tu_email(d[0])
     data_lop=csdl.lop_theo_khoa(makhoa)
-    file1=StringVar()
-    file2=StringVar()
-    file3=StringVar()
-    file4=StringVar()
+
+    
 
 
+    cb_lop=Combobox(bg,width=27,values=data_lop, font=("Baloo Tamma",12),textvariable=lop)
+    cb_lop.current(1)
+    cb_lop.place(x=580,y=12)
+
+    cb_lop.bind('<<ComboboxSelected>>', update)
+    Frame(bg,width=287,height=5,bg= "white").place(x=570,y=12)
+    Frame(bg,width=276,height=5,bg= "white").place(x=570,y=32)
+    Frame(bg,width=5,height=20,bg= "white").place(x=577,y=12)
+
+    
+    txt_masv=Entry(bg,width=30,bd=0,font=("Baloo Tamma",12),textvariable=ma,highlightthickness=0)
+    txt_masv.place(x=578,y=48)
+
+    txt_hoten=Entry(bg,width=30,bd=0,font=("Baloo Tamma",12),textvariable=ten,highlightthickness=0)
+    txt_hoten.place(x=578,y=81)
 
 
-
-    cb_lop=Combobox(bg,width=27,values=data_lop, font=("Baloo Tamma",12))
-    cb_lop.current(0)
-    cb_lop.place(x=580,y=90)
-    Frame(bg,width=280,height=5,bg= "white").place(x=570,y=90)
-    Frame(bg,width=276,height=5,bg= "white").place(x=570,y=112)
-    Frame(bg,width=5,height=20,bg= "white").place(x=577,y=90)
-
-    txt_masv=Entry(bg,width=30,bd=0,font=("Baloo Tamma",12))
-    txt_masv.place(x=578,y=140)
-
-    txt_hoten=Entry(bg,width=30,bd=0,font=("Baloo Tamma",12))
-    txt_hoten.place(x=578,y=190)
+    btnthem=Button(bg,image=img_btnthem,bd=0,highlightthickness=0,command=themdlkhuonmat)
+    btnthem.place(x=487,y=260)
+    btnsua=Button(bg,image=img_btnsua,bd=0,highlightthickness=0)
+    btnsua.place(x=637,y=260)
+    btnxoa=Button(bg,image=img_btnxoa,bd=0,highlightthickness=0)
+    btnxoa.place(x=770,y=260)
+    btntimkiem=Button(bg,image=img_btntimkiem,bd=0,highlightthickness=0)
+    btntimkiem.place(x=881,y=305)
+    btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0)
+    btnkhoiphuc.place(x=915,y=305)
 
 
-    txt_tenmahoa=Entry(bg,width=30,bd=0,font=("Baloo Tamma",12))
-    txt_tenmahoa.place(x=578,y=237)
-
-
-    btnthem=Button(bg,image=ing_btnthem,bd=0,highlightthickness=0,command=themdlkhuonmat)
-    btnthem.place(x=557,y=464)
+   
 
     
 
@@ -258,16 +338,82 @@ def main():
 
     tengv=csdl.tim_tengv_tu_email()
     Label(bg,text=tengv,font=("Baloo Tamma",14),fg="#A672BB",bg="white").place(x=45,y=40)
-    # i=1
-    # Button(bg,image=ing_btnchonanh,bd=0,highlightthickness=0,command=lambda:chonanh(i)).place(x=583,y=281)
-
-    f=Frame(bg)
-    f.place(x=330,y=330)
-    Label(bg,image=ing_frame,bd=0,highlightthickness=0).place(x=389,y=229)
-
-
     
 
+        
+    f1=Frame(bg,bg="white",width=100,height=120)
+    f1.place(x=322,y=120)
+    f2=Frame(bg,bg="white",width=100,height=120)
+    f2.place(x=458,y=120)
+    f3=Frame(bg,bg="white",width=100,height=120)
+    f3.place(x=594,y=120)
+    f4=Frame(bg,bg="white",width=100,height=120)
+    f4.place(x=730,y=120)
+    f5=Frame(bg,bg="white",width=100,height=120)
+    f5.place(x=866,y=120)
+
+    lb1=Label(f1,bg="white")
+    lb1.pack()
+    lb2=Label(f2,bg="white")
+    lb2.pack()
+    lb3=Label(f3,bg="white")
+    lb3.pack()
+    lb4=Label(f4,bg="white")
+    lb4.pack()
+    lb5=Label(f5,bg="white")
+    lb5.pack()
+
+    
+    btn1=Button(f1,image=ing_chonanh,bd=0,highlightthickness=0,command=lambda:chonanh(lb1,1,btn1))
+    btn1.pack(side="bottom")
+    btn2=Button(f2,image=ing_chonanh,bd=0,highlightthickness=0,command=lambda:chonanh(lb2,2,btn2))
+    btn2.pack(side="bottom")
+    btn3=Button(f3,image=ing_chonanh,bd=0,highlightthickness=0,command=lambda:chonanh(lb3,3,btn3))
+    btn3.pack(side="bottom")
+    btn4=Button(f4,image=ing_chonanh,bd=0,highlightthickness=0,command=lambda:chonanh(lb4,4,btn4))
+    btn4.pack(side="bottom")
+    btn5=Button(f5,image=ing_chonanh,bd=0,highlightthickness=0,command=lambda:chonanh(lb5,5,btn5))
+    btn5.pack(side="bottom")
+
+    
+    img=Image.open("aa.jpg")
+    img.thumbnail((100,100))
+    img=ImageTk.PhotoImage(img)
+
+    lb1.config(image=img)
+    lb1.image=img
+
+    lb2.config(image=img)
+    lb2.image=img
+
+    lb3.config(image=img)
+    lb3.image=img
+
+    lb4.config(image=img)
+    lb4.image=img
+
+    lb5.config(image=img)
+    lb5.image=img
+
+
+
+
+    tv = ttk.Treeview(bg, columns=(1,2,3), show="headings")
+    tv.column(1, width=100,anchor=CENTER)
+    tv.column(2, width=100,anchor=CENTER)
+    tv.column(3, width=240)
+    
+
+    tv.heading(1,text="STT")
+    tv.heading(2,text="Mã sinh viên")
+    tv.heading(3,text="Tên sinh viên")
+    
+    
+    tv.place(x=368,y=350)
+
+    tv.bind('<Double 1>', getrow)
+
+    khoiphuc()
 
     win.mainloop()
 

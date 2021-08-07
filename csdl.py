@@ -1,4 +1,4 @@
-from os import replace
+from tkinter import messagebox
 import mysql.connector
 import socket 
 import datetime
@@ -276,7 +276,7 @@ def cahoc():
     now = datetime.datetime.now()
     today7h30 = now.replace(hour=7, minute=30, second=0, microsecond=0)
     today9h30 = now.replace(hour=9, minute=30, second=0, microsecond=0)
-    today11h45 = now.replace(hour=11, minute=45, second=0, microsecond=0)
+    today11h45 = now.replace(hour=12, minute=45, second=0, microsecond=0)
     today13h00 = now.replace(hour=13, minute=00, second=0, microsecond=0)
     today15h20 = now.replace(hour=15, minute=20, second=0, microsecond=0)
     today17h20 = now.replace(hour=23, minute=20, second=0, microsecond=0)
@@ -470,6 +470,40 @@ def timkiem_diemdanh(magv,ngay,mamh,lop,ca,q):
     rows = cur.fetchall()
     return rows
 
+def danhsachsinhvien(malop):
+    cur=conn.cursor()
+    cur.execute("SELECT ROW_NUMBER() OVER ( ORDER BY MaSV) AS STT , MaSV ,TenSV FROM sinhvien where MaLop = "+str(malop)+"" ) 
+    rows = cur.fetchall()
+    return rows
+
+def anh(masv):
+    cur=conn.cursor()
+    cur.execute("SELECT Anh FROM sinhvien where MaSV = "+str(masv)+"" ) 
+    a=[]
+    while True:
+        row = cur.fetchone()
+        if row == None:
+            break
+        a.append(row[0])
+    return a
+
+
+def insertOrUpdate(id, name,malop,anh):
+    cur = conn.cursor()
+    cur.execute("select * from sinhvien where MaSV="+str(id))
+    Cusror = cur.fetchall()
+
+    isRecordExist = 0 #kiểm tra nếu có ID trong database rồi thì = 1 nếu chưa thì giữ =0
+    for row in Cusror:
+        isRecordExist = 1
+    
+    if(isRecordExist == 0):
+        cur.execute("insert into sinhvien(MaSV,TenSV,MaLop,Anh) values("+str(id)+",'"+str(name)+"',"+str(malop)+",'"+str(anh)+"')")
+    else:
+        status=messagebox.askyesno("Thông báo","ID đã tồn tại! Bạn có muốn update tên ?")
+        if status == True:
+            cur.execute("update sinhvien set TenSV='"+str(name)+"'where MaSV="+str(id))
+    conn.commit()
 
 
 

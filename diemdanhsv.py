@@ -21,6 +21,7 @@ import diemdanhbu
 # import os
 import numpy as np
 from tkinter import ttk
+import re
 
 
 def main():
@@ -33,6 +34,22 @@ def main():
     #     tts.save("sound.mp3")
     #     playsound.playsound("sound.mp3", True)
     #     os.remove("sound.mp3")
+    def khong_dau(s):
+        s = re.sub(r'[àáạảãâầấậẩẫăằắặẳẵ]', 'a', s)
+        s = re.sub(r'[ÀÁẠẢÃĂẰẮẶẲẴÂẦẤẬẨẪ]', 'A', s)
+        s = re.sub(r'[èéẹẻẽêềếệểễ]', 'e', s)
+        s = re.sub(r'[ÈÉẸẺẼÊỀẾỆỂỄ]', 'E', s)
+        s = re.sub(r'[òóọỏõôồốộổỗơờớợởỡ]', 'o', s)
+        s = re.sub(r'[ÒÓỌỎÕÔỒỐỘỔỖƠỜỚỢỞỠ]', 'O', s)
+        s = re.sub(r'[ìíịỉĩ]', 'i', s)
+        s = re.sub(r'[ÌÍỊỈĨ]', 'I', s)
+        s = re.sub(r'[ùúụủũưừứựửữ]', 'u', s)
+        s = re.sub(r'[ƯỪỨỰỬỮÙÚỤỦŨ]', 'U', s)
+        s = re.sub(r'[ỳýỵỷỹ]', 'y', s)
+        s = re.sub(r'[ỲÝỴỶỸ]', 'Y', s)
+        s = re.sub(r'[Đ]', 'D', s)
+        s = re.sub(r'[đ]', 'd', s)
+        return s
     def diemdanhbulai():
         win.destroy()
         diemdanhbu.main()
@@ -47,7 +64,9 @@ def main():
         messagebox.showwarning("thông báo","Nhấn 'q' để thoát ")
         malop=csdl.tenlop_thanh_ma(data_lop)
         a=csdl.lay_id_theo_lop(malop)#------------------lấy id theo lop
-        lopp=data_lop.replace(" ","_")
+
+        lopp=khong_dau(data_lop.replace(" ","_"))
+       
         f=open("mahoa/"+lopp+".pkl","rb")
         ref_dictt=pickle.load(f) #đọc file và luu tên theo id vào biến ref_dictt
         f.close()
