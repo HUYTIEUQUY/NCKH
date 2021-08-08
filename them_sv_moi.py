@@ -37,18 +37,24 @@ def main():
         for i in row:
             tv.insert('','end',values=i)
 
-    def update(event):
+    def capnhat(event):
         malop=csdl.tenlop_thanh_ma(cb_lop.get())
         row=csdl.danhsachsinhvien(malop)
         tv.delete(*tv.get_children())
         for i in row:
             tv.insert('','end',values=i)
 
+    def timkiem():
+        malop=csdl.tenlop_thanh_ma(lop.get())
+        row=csdl.timsv(malop,ndtimkiem.get())
+        update(row)
+
     def getrow(event):
         rowid=tv.identify_row(event.y)
         item=tv.item(tv.focus())
         ten.set(item['values'][2])
         ma.set(item['values'][1])
+        macu.set(item['values'][1])
         manganh=csdl.anh(ma.get())
         anh=manganh[0]
         gananh(anh)
@@ -103,6 +109,89 @@ def main():
         print(a)
         chonanh(lb,i,btn)
 
+    def sua():
+        if(ma.get()!=macu.get()):
+            messagebox.showerror("thông báo","Bạn không được sửa mã")
+        else:
+            masv=ma.get()
+            tensv=ten.get()
+            malop=csdl.tenlop_thanh_ma(cb_lop.get())
+            csdl.suasv(masv,tensv,malop)
+            xoa_sv_matran(masv)
+            suamatran()
+            messagebox.showinfo("thông báo","Bạn đã sửa thành công")
+
+    def suamatran():
+        id=ma.get()
+        namemahoa=khong_dau(ten.get())
+        lop=cb_lop.get().replace(" ","_")
+        lopmahoa=khong_dau(lop)
+        try:
+            f=open("mahoa/"+lopmahoa+".pkl","rb")
+            ref_dictt=pickle.load(f)
+            f.close()
+        except:
+            ref_dictt={}
+        ref_dictt[id]=namemahoa
+        f=open("mahoa/"+lopmahoa+".pkl","wb")
+        pickle.dump(ref_dictt,f)
+        f.close()
+        try:
+            f=open("mahoa/"+lopmahoa+"mahoa.pkl","rb")
+            embed_dictt=pickle.load(f)
+            f.close()
+        except:
+            embed_dictt={}
+        
+        
+        anh=""
+        for i in range(len(a)):
+            anh=anh+" "+str(a[i])
+            file1_image = face_recognition.load_image_file("img_anhsv/"+a[i])
+            file1_face_encoding = face_recognition.face_encodings(file1_image)[0]
+            if id in embed_dictt:
+                embed_dictt[id]+=[file1_face_encoding]
+            else:
+                embed_dictt[id]=[file1_face_encoding]
+        
+
+        f=open("mahoa/"+lopmahoa+"mahoa.pkl","wb")
+        pickle.dump(embed_dictt,f)
+        f.close()
+
+
+    def xoa():
+        masv=ma.get()
+        if messagebox.askyesno("thông báo","Bạn có thực sự muốn xoá"):
+            csdl.xoasv(masv)# xoá sv trên database
+            khoiphuc()
+            xoa_sv_matran(masv)#xoá mahoa anh 
+            xoaanh(masv)# xoá anh
+            resetanh()
+        else: 
+            return True
+        
+    def xoa_sv_matran(masv):
+        tenlop=lop.get().replace(" ","_")
+        lopmahoa=khong_dau(tenlop)
+        with open("mahoa/"+str(lopmahoa)+"mahoa.pkl","rb") as f:
+            ref_dictt=pickle.load(f)
+            ref_dictt.pop(masv)
+        file= open("mahoa/"+str(lopmahoa)+"mahoa.pkl","wb") 
+        pickle.dump(ref_dictt,file)
+        file.close()
+       
+        with open("mahoa/"+str(lopmahoa)+".pkl","rb") as f:
+            ref_dictt=pickle.load(f)
+            ref_dictt.pop(masv)
+        file= open("mahoa/"+str(lopmahoa)+".pkl","wb") 
+        pickle.dump(ref_dictt,file)
+        file.close()
+
+    def xoaanh(masv):
+        for i in range(5):
+            os.remove("img_anhsv/"+str(masv)+str(i+1)+".png")
+
     def chonanh(lb,i,btn):
         x= filedialog.askopenfilename(initialdir=os.getcwd(),title="select image file", filetypes=(("JPG file","*.jpg"),("PNG file","*.png"),("All file","*.*")))
         shutil.copyfile(x,"./img_anhsv/"+str(ma.get())+str(i)+".png")
@@ -133,6 +222,27 @@ def main():
         file.close()
         win.destroy()
         dangnhap.main()
+
+    def resetanh():
+        lb1.config(image="")
+        img=Image.open("aa.jpg")
+        img.thumbnail((100,100))
+        img=ImageTk.PhotoImage(img)
+        
+        lb1.config(image=img)
+        lb1.image=img
+
+        lb2.config(image=img)
+        lb2.image=img
+
+        lb3.config(image=img)
+        lb3.image=img
+
+        lb4.config(image=img)
+        lb4.image=img
+
+        lb5.config(image=img)
+        lb5.image=img
     
     def themdlkhuonmat():
         id=txt_masv.get()
@@ -157,7 +267,6 @@ def main():
         try:
             f=open("mahoa/"+lopmahoa+"mahoa.pkl","rb")
             embed_dictt=pickle.load(f)
-
             f.close()
         except:
             embed_dictt={}
@@ -181,28 +290,10 @@ def main():
 
         ma.set("")
         ten.set("")
-        lb1.config(image="")
-        img=Image.open("aa.jpg")
-        img.thumbnail((100,100))
-        img=ImageTk.PhotoImage(img)
-        
-        lb1.config(image=img)
-        lb1.image=img
-
-        lb2.config(image=img)
-        lb2.image=img
-
-        lb3.config(image=img)
-        lb3.image=img
-
-        lb4.config(image=img)
-        lb4.image=img
-
-        lb5.config(image=img)
-        lb5.image=img
+        resetanh()
         malop=csdl.tenlop_thanh_ma(cb_lop.get())
         row=csdl.danhsachsinhvien(malop)
-        cb_lop.bind('<<ComboboxSelected>>', update)
+        cb_lop.bind('<<ComboboxSelected>>', capnhat)
         khoiphuc()
         messagebox.showinfo("thông báo","Đã thêm sinh viên vào danh sách")
         # for i in range(5):
@@ -276,8 +367,10 @@ def main():
     ten_thiet_bi = socket.gethostname()
     d=[]
     ma=StringVar()
+    macu=StringVar()
     ten=StringVar()
     lop=StringVar()
+    ndtimkiem=StringVar()
     
 
     with open(ten_thiet_bi+".txt","r") as file:
@@ -292,7 +385,7 @@ def main():
     cb_lop.current(1)
     cb_lop.place(x=580,y=12)
 
-    cb_lop.bind('<<ComboboxSelected>>', update)
+    cb_lop.bind('<<ComboboxSelected>>', capnhat)
     Frame(bg,width=287,height=5,bg= "white").place(x=570,y=12)
     Frame(bg,width=276,height=5,bg= "white").place(x=570,y=32)
     Frame(bg,width=5,height=20,bg= "white").place(x=577,y=12)
@@ -300,6 +393,8 @@ def main():
     
     txt_masv=Entry(bg,width=30,bd=0,font=("Baloo Tamma",12),textvariable=ma,highlightthickness=0)
     txt_masv.place(x=578,y=48)
+    txt_timkiem=Entry(bg,width=25,bd=0,font=("Baloo Tamma",12),textvariable=ndtimkiem,highlightthickness=0)
+    txt_timkiem.place(x=650,y=308)
 
     txt_hoten=Entry(bg,width=30,bd=0,font=("Baloo Tamma",12),textvariable=ten,highlightthickness=0)
     txt_hoten.place(x=578,y=81)
@@ -307,13 +402,13 @@ def main():
 
     btnthem=Button(bg,image=img_btnthem,bd=0,highlightthickness=0,command=themdlkhuonmat)
     btnthem.place(x=487,y=260)
-    btnsua=Button(bg,image=img_btnsua,bd=0,highlightthickness=0)
+    btnsua=Button(bg,image=img_btnsua,bd=0,highlightthickness=0,command=sua)
     btnsua.place(x=637,y=260)
-    btnxoa=Button(bg,image=img_btnxoa,bd=0,highlightthickness=0)
+    btnxoa=Button(bg,image=img_btnxoa,bd=0,highlightthickness=0,command=xoa)
     btnxoa.place(x=770,y=260)
-    btntimkiem=Button(bg,image=img_btntimkiem,bd=0,highlightthickness=0)
+    btntimkiem=Button(bg,image=img_btntimkiem,bd=0,highlightthickness=0,command=timkiem)
     btntimkiem.place(x=881,y=305)
-    btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0)
+    btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,command=khoiphuc)
     btnkhoiphuc.place(x=915,y=305)
 
 
@@ -376,27 +471,7 @@ def main():
     btn5.pack(side="bottom")
 
     
-    img=Image.open("aa.jpg")
-    img.thumbnail((100,100))
-    img=ImageTk.PhotoImage(img)
-
-    lb1.config(image=img)
-    lb1.image=img
-
-    lb2.config(image=img)
-    lb2.image=img
-
-    lb3.config(image=img)
-    lb3.image=img
-
-    lb4.config(image=img)
-    lb4.image=img
-
-    lb5.config(image=img)
-    lb5.image=img
-
-
-
+    resetanh()
 
     tv = ttk.Treeview(bg, columns=(1,2,3), show="headings")
     tv.column(1, width=100,anchor=CENTER)

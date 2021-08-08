@@ -131,7 +131,6 @@ def main():
                     cv2.putText(frame, ref_dictt[name], (left + 6, bottom - 6), font, 0.7, (255, 255, 255), 1)
                 
             cv2.imshow('Video', frame)
-            cv2.waitKey(1)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
         video_capture.release()

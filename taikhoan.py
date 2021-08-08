@@ -1,52 +1,24 @@
 from tkinter import *
 from tkinter import PhotoImage
-from tkinter.ttk import Combobox
 from PIL import ImageTk
 import csdl
-from tkinter import messagebox
 import dangnhap
 import socket
-import mysql.connector
-import pickle
-import cv2
-import face_recognition
 import them_sv_moi
 import diemdanhsv
 import thongke
 import diemdanhbu
+import taikhoan_thongbao
 
 
 def main():
     def thongbaodd():
         win.destroy()
         diemdanhbu.main()
-    def quaylai():
-        win.destroy()
-        main()
-    def lichgiang():
-        anhnen=bg.create_image(500,300,image=img_bg1)
-        btnthongbao.destroy()
-        lbgv.destroy()
-        lbtk.destroy()
-        lbe.destroy()
-        btndangxuat1.destroy()
-        btndoimatkhau.destroy()
-        lbcg.destroy()
-        lbstb.destroy()
-        lbstb1.destroy()
-        lbdd.destroy()
-        btnthongbaodd.destroy()
-        bglichgiang=Frame(bg,width=450,height=140,bg="#A672BB")
-        bglichgiang.place(x=410,y=155)
-        for i in range(len(l)):
-            j=0
-            Label(bglichgiang,text=l[i],width=20).grid(row=i,column=j,pady=10)
-            Label(bglichgiang,text=m[i],width=35).grid(row=i,column=j+1,padx=10,pady=10)
-            Label(bglichgiang,text=c[i],width=10).grid(row=i,column=j+2,pady=10)
-        btnquaylai=Button(bg,image=ing_btnquaylai,bd=0,highlightthickness=0,command=quaylai)
-        btnquaylai.place(x=836,y=537)
         
-            
+    def lichgiang():
+        win.destroy()
+        taikhoan_thongbao.main()
 
     def menuthongke():
         win.destroy()

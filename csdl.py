@@ -279,7 +279,7 @@ def cahoc():
     today11h45 = now.replace(hour=12, minute=45, second=0, microsecond=0)
     today13h00 = now.replace(hour=13, minute=00, second=0, microsecond=0)
     today15h20 = now.replace(hour=15, minute=20, second=0, microsecond=0)
-    today17h20 = now.replace(hour=23, minute=20, second=0, microsecond=0)
+    today17h20 = now.replace(hour=17, minute=20, second=0, microsecond=0)
     if now>=today7h30 and now <= today9h30:
         return "1"
     elif now >= today9h30 and now<= today11h45:
@@ -391,7 +391,7 @@ def cagiang(magv,l,m,c):
 
 def gvdiemdanh(magv,ngaydd,tenlopdd,tenmhdd,cadd):
     cur = conn.cursor()
-    cur.execute("SELECT Ngay, TenLop,TenMH,Ca FROM chitiettkb, monhoc, lop WHERE chitiettkb.MaMH=monhoc.MaMH AND lop.MaLop = chitiettkb.MaLop AND MaGV ="+str(magv)+" AND TrangThaiDD like 'chưa' AND Ngay <= '"+str(ngay())+"'")
+    cur.execute("SELECT Ngay, TenLop,TenMH,Ca FROM chitiettkb, monhoc, lop WHERE chitiettkb.MaMH=monhoc.MaMH AND lop.MaLop = chitiettkb.MaLop AND MaGV ="+str(magv)+" AND TrangThaiDD like 'chưa' AND Ngay < '"+str(ngay())+"'")
     while True:
         row = cur.fetchone()
         
@@ -476,6 +476,11 @@ def danhsachsinhvien(malop):
     rows = cur.fetchall()
     return rows
 
+def xoasv(masv):
+    cur=conn.cursor()
+    cur.execute("DELETE FROM sinhvien WHERE MaSV="+str(masv)+"" ) 
+    conn.commit()
+
 def anh(masv):
     cur=conn.cursor()
     cur.execute("SELECT Anh FROM sinhvien where MaSV = "+str(masv)+"" ) 
@@ -486,6 +491,12 @@ def anh(masv):
             break
         a.append(row[0])
     return a
+
+def timsv(malop,q):
+    cur=conn.cursor()
+    cur.execute("SELECT ROW_NUMBER() OVER ( ORDER BY MaSV) AS STT , MaSV ,TenSV FROM sinhvien where MaLop = "+str(malop)+" AND (MaSV like'%"+str(q)+"%' OR TenSV like'%"+str(q)+"%')" ) 
+    rows = cur.fetchall()
+    return rows
 
 
 def insertOrUpdate(id, name,malop,anh):
@@ -503,6 +514,11 @@ def insertOrUpdate(id, name,malop,anh):
         status=messagebox.askyesno("Thông báo","ID đã tồn tại! Bạn có muốn update tên ?")
         if status == True:
             cur.execute("update sinhvien set TenSV='"+str(name)+"'where MaSV="+str(id))
+    conn.commit()
+
+def suasv(masv,tensv,lop):
+    cur=conn.cursor()
+    cur.execute("update sinhvien set TenSV = '"+str(tensv)+"' ,MaLop="+str(lop)+" where MaSV="+str(masv) ) 
     conn.commit()
 
 

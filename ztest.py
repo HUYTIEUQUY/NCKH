@@ -1,5 +1,3 @@
-a=['1911020030','1911020031','1911020032']
-s=""
-for i in range(len(a)):
-    s=s+" "+str(a[i])
 
+
+# cv2.imwrite('dataSet/User.'+str(id)+'.'+str(sampleNum)+'.png',gray[y: y+h, x: x+w])
