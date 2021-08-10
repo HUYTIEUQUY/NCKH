@@ -6,7 +6,6 @@ from tkinter.ttk import Combobox
 from PIL import Image, ImageTk
 import os
 import shutil
-from mysql.connector.errors import ProgrammingError
 import csdl
 from tkinter import messagebox
 import dangnhap
@@ -20,11 +19,50 @@ import thongke
 import taikhoan
 import re
 import xlsxwriter
+import pandas as pd
+
 
 
 
 
 def main():
+    def nhap_excel():
+        fln = filedialog.askopenfilename(initialdir=os.getcwd(),title="Mở file excel ",filetypes=(("XLSX file","*.xlsx"),("All file","*.*")))
+        
+        xl = pd.ExcelFile(fln)
+        df = pd.read_excel(xl, 0) 
+
+
+        for i in range(df.shape[0]):
+            masv=df['Mã sinh viên'][i]
+            tensv=df['Tên sinh viên'][i]
+            csdl.nhap_excel_csdl(masv,tensv,malop)
+
+        update(row)
+    def xuat_excel():
+        malop=csdl.tenlop_thanh_ma(cb_lop.get())
+        
+        if len(row)<1:
+            messagebox.showwarning("thông báo","Không có dữ liệu xuất file excel !")
+            return False
+        else:
+
+            fln = filedialog.asksaveasfilename(initialdir=os.getcwd(),title="Lưu file excel",filetypes=(("XLSX File","*.xlsx"),("All File","*.*")))
+            a=csdl.dong_masinhvien(malop)
+            b=csdl.dong_tensinhvien(malop)
+
+            out_workbook = xlsxwriter.Workbook(fln+".xlsx")
+            outsheet = out_workbook.add_worksheet()
+            outsheet.write("A1","Mã sinh viên")
+            outsheet.write("B1","Tên sinh viên")
+            
+            def write_data_to_file(array,x):
+                for i in range(len(array)):
+                    outsheet.write(i+1,x,array[i])
+            write_data_to_file(a,0)
+            write_data_to_file(b,1)
+            out_workbook.close()
+
     
     def khoiphuc():
         ma.set("")
@@ -71,9 +109,11 @@ def main():
         anh=""
         anh=manganh[0]
         lb2.config(text=item['values'][1])
-
-        manganh=anh.split()
-        img=Image.open("img_anhsv/"+manganh[0])
+        if(anh==None):
+            img=Image.open("img_anhsv/aa.jpg")
+        else:
+            manganh=anh.split()
+            img=Image.open("img_anhsv/"+manganh[0])
         img.thumbnail((140,140))
         img=ImageTk.PhotoImage(img)
         lb1.config(image=img)
@@ -178,7 +218,6 @@ def main():
         lb.image=img
         btn.config(command=lambda:sua_anh(lb,i,btn) )
          
-        
         
     def menutaikhoan():
         win.destroy()
@@ -296,6 +335,8 @@ def main():
     img_btnxoa=ImageTk.PhotoImage(file="img_admin/btn_xoa.png")
     img_btntimkiem=ImageTk.PhotoImage(file="img_admin/btn_timkiem.png")
     img_btnkhoiphuc=ImageTk.PhotoImage(file="img_admin/btn_khoiphuc.png")
+    img_btnexcel_nhap=ImageTk.PhotoImage(file="img_admin/nhap_excel.png")
+    img_btnexcel_xuat=ImageTk.PhotoImage(file="img_admin/xuat_excel.png")
 
     bg=Canvas(win,width=1000,height=600,bg="green")
     bg.pack(side="left",padx=0)
@@ -348,6 +389,11 @@ def main():
     btntimkiem.place(x=881,y=305)
     btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,command=khoiphuc)
     btnkhoiphuc.place(x=915,y=305)
+    btnexcelnhap=Button(bg,image=img_btnexcel_nhap,bd=0,highlightthickness=0,command=nhap_excel)
+    btnexcelnhap.place(x=948,y=2)
+    btnexcelxuat=Button(bg,image=img_btnexcel_xuat,bd=0,highlightthickness=0,command=xuat_excel)
+    btnexcelxuat.place(x=898,y=2)
+
 
 
    

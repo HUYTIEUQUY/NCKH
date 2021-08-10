@@ -10,8 +10,10 @@
 # # thiết kế trang khi không có dữ liệu
 
 import mysql.connector
-import socket 
-import datetime
+import xlrd
+import pandas as pd
+
+
 
 conn = mysql.connector.connect(
   host="localhost",
@@ -23,19 +25,24 @@ conn = mysql.connector.connect(
 
 cur=conn.cursor()
 
+import pandas as pd
+xl = pd.ExcelFile('sinhvien.xlsx')
+df = pd.read_excel(xl, 0) 
 
-def makhoa_tu_email(email):
+
+for i in range(df.shape[0]):
+    ma=df['Mã sinh viên'][i]
+    ten=df['Tên sinh viên'][i]
+    cur.execute("INSERT INTO sinhvien(MaSV,TenSV) VALUES ("+str(ma)+",'"+str(ten)+"')")
     
-    cur = conn.cursor()
-    cur.execute("SELECT MaKhoa FROM giangvien WHERE Email like '"+str(email)+"'")
-    a=[]
-    while True:
-        row = cur.fetchone()
-        
-        if row == None:
-            break
-        a=row[0]
-    return a
+   
 
 
-print(makhoa_tu_email("admincntt@gmail.com"))
+conn.commit()
+conn.close()
+
+
+
+
+
+

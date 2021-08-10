@@ -96,6 +96,10 @@ def main(masv):
     def menudiemdanh():
         win.destroy()
         diemdanhsv.main()
+    
+    def trolai():
+        win.destroy()
+        them_sv_moi.main()
     def dangxuat():
         ten_thiet_bi = socket.gethostname()
         file=open(ten_thiet_bi+".txt","w")
@@ -107,7 +111,7 @@ def main(masv):
    
    
     def capnhat():
-       
+        
         anh=""
         id=masv
         tenlop=csdl.tim_lop(masv)
@@ -163,9 +167,11 @@ def main(masv):
                     cv2.destroyAllWindows() # thoát khỏi camera
                     break
 
+        csdl.suaanh(anh,id)
         f=open("mahoa/"+lop+"mahoa.pkl","wb")
         pickle.dump(embed_dictt,f)
         f.close()
+
         anh=csdl.anh(masv)
         loadanh(anh)
        
@@ -183,6 +189,7 @@ def main(masv):
     ing_menutaikhoan=ImageTk.PhotoImage(file="img/menutaikhoan.png")
     ing_menuthongke=ImageTk.PhotoImage(file="img/menuthongke.png")
     ing_btndangxuat=ImageTk.PhotoImage(file="img/btndangxuat.png")
+    ing_btntrolai=ImageTk.PhotoImage(file="img/btn_trolai.png")
 
 
     bg=Canvas(win,width=1000,height=600,bg="green")
@@ -232,7 +239,11 @@ def main(masv):
     lb5.pack()
 
     anh=csdl.anh(masv)
-   
+    if anh==[None]:
+        anh=['aa.jpg aa.jpg aa.jpg aa.jpg aa.jpg']
+        
+
+
     loadanh(anh)
 
 
@@ -240,6 +251,10 @@ def main(masv):
 
     btn_capnhat=Button(bg,image=ing_btncapnhat,bd=0,highlightthickness=0,command=capnhat)
     btn_capnhat.place(x=618,y=518)
+    btn_trolai=Button(bg,image=ing_btntrolai,bd=0,highlightthickness=0,command=trolai)
+    btn_trolai.place(x=948,y=2)
+
+
 
 
     win.mainloop()

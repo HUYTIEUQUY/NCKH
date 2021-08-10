@@ -533,5 +533,41 @@ def tim_lop(masv):
         a=row[0]
     return a
 
+def suaanh(anh,ma):
+    cur=conn.cursor()
+    cur.execute("update sinhvien set Anh = '"+str(anh)+"' WHERE MaSV="+str(ma)+"") 
+    conn.commit()
+
+
+def dong_masinhvien(malop):
+    cur = conn.cursor()
+    cur.execute("SELECT MaSV  FROM sinhvien WHERE MaLop = "+str(malop)+"" )
+    a=[]
+    while True:
+        row = cur.fetchone()
+        if row == None:
+            break
+        a.append(row[0])
+    return a
+
+def dong_tensinhvien(malop):
+    cur = conn.cursor()
+    cur.execute("SELECT TenSV  FROM sinhvien WHERE MaLop = "+str(malop)+"" )
+    a=[]
+    while True:
+        row = cur.fetchone()
+        if row == None:
+            break
+        a.append(row[0])
+    return a
+    
+
+
+def nhap_excel_csdl(ma,ten,malop):
+    cur = conn.cursor()
+    cur.execute("INSERT INTO sinhvien(MaSV,TenSV,MaLop) VALUES ("+str(ma)+",'"+str(ten)+"', "+str(malop)+")")
+    conn.commit()
+  
+
 
 
