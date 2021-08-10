@@ -7,7 +7,7 @@ conn = mysql.connector.connect(
   host="localhost",
   user="root",
   password="",
-  database="diemdanhsinhvien"
+  database="diemdanhsv"
 )
 
 
@@ -520,6 +520,18 @@ def suasv(masv,tensv,lop):
     cur=conn.cursor()
     cur.execute("update sinhvien set TenSV = '"+str(tensv)+"' ,MaLop="+str(lop)+" where MaSV="+str(masv) ) 
     conn.commit()
+
+
+def tim_lop(masv):
+    cur = conn.cursor()
+    cur.execute("SELECT TenLop FROM lop,sinhvien WHERE lop.MaLop=sinhvien.MaLop AND MaSV="+str(masv)+"")
+    a=""
+    while True:
+        row = cur.fetchone()
+        if row == None:
+            break
+        a=row[0]
+    return a
 
 
 

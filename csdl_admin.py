@@ -6,7 +6,7 @@ conn = mysql.connector.connect(
   host="localhost",
   user="root",
   password="",
-  database="diemdanhsinhvien"
+  database="diemdanhsv"
 )
 
 
@@ -116,20 +116,20 @@ def KT_lich_tkb(ngay, malop,ca):
         else:
             return 0
 def banggv(makhoa):
-    cur.execute("SELECT ROW_NUMBER() OVER ( ORDER BY MaGV) AS STT , MaGV ,TenGV,NgaySinh,Email FROM giangvien where MaKhoa = "+str(makhoa)+"" ) 
+    cur.execute("SELECT ROW_NUMBER() OVER ( ORDER BY MaGV) AS STT , MaGV ,TenGV,Email FROM giangvien where MaKhoa = "+str(makhoa)+"" ) 
     rows = cur.fetchall()
     return rows
 def timkiem_gv(makhoa,q):
     cur.execute("SELECT ROW_NUMBER() OVER ( ORDER BY MaGV) AS STT , MaGV ,TenGV,NgaySinh,Email FROM giangvien where MaKhoa = "+str(makhoa)+"  AND (MaGV='%"+str(q)+"%' OR TenGV like '%"+str(q)+"%'  OR  NgaySinh like '%"+str(q)+"%'  OR Email like '%"+str(q)+"%')"  ) 
     rows = cur.fetchall()
     return rows
-def themdangnhap(email,ngaysinh):
-    matkhau=ngaysinh.replace("/","")
+def themdangnhap(email):
+    matkhau="123456"
     cur.execute("INSERT INTO dangnhap(Email,MatKhau) VALUES ('"+str(email)+"','"+str(matkhau)+"')" ) 
     conn.commit()
-def themgv(makhoa,email,ngaysinh,tengv):
-    themdangnhap(email,ngaysinh)
-    cur.execute("INSERT INTO giangvien(TenGV,MaKhoa,Email,NgaySinh) VALUES ('"+str(tengv)+"'  , "+str(makhoa)+", '"+str(email)+"', '"+str(ngaysinh)+"' )" ) 
+def themgv(makhoa,email,tengv):
+    themdangnhap(email)
+    cur.execute("INSERT INTO giangvien(TenGV,MaKhoa,Email) VALUES ('"+str(tengv)+"' , "+str(makhoa)+", '"+str(email)+"')" ) 
     conn.commit()
 def xoatk(email):
     cur.execute("DELETE FROM dangnhap WHERE Email='"+str(email)+"'" ) 
@@ -159,8 +159,8 @@ def kt_loptontai(malop):
     else:
       return False
 
-def suagv(magv,tengv,ngaysinh):
-    cur.execute("UPDATE giangvien SET TenGV='"+str(tengv)+"',NgaySinh='"+str(ngaysinh)+"' WHERE MaGV="+str(magv)+"" ) 
+def suagv(magv,tengv):
+    cur.execute("UPDATE giangvien SET TenGV='"+str(tengv)+"' WHERE MaGV = "+str(magv)+"" ) 
     conn.commit()
 
 def bangtkb(makhoa):
@@ -198,8 +198,8 @@ def timmon(makhoa,q):
     rows = cur.fetchall()
     return rows
 
-def themmon(makhoa,tenmon):
-    cur.execute("INSERT INTO monhoc(TenMH, MaKhoa) VALUES ('"+str(tenmon)+"',"+str(makhoa)+")" ) 
+def themmon(mamh,makhoa,tenmon):
+    cur.execute("INSERT INTO monhoc(MaMH,TenMH, MaKhoa) VALUES ('"+str(mamh)+"','"+str(tenmon)+"',"+str(makhoa)+")" ) 
     conn.commit()
 def xoamon(mamh):
     cur.execute("DELETE FROM monhoc WHERE MaMH="+str(mamh)+"" ) 

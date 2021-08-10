@@ -24,8 +24,7 @@ def main():
         item=tv.item(tv.focus())
         data_magv.set(item['values'][1])
         data_ten.set(item['values'][2])
-        data_email.set(item['values'][4])
-        data_ngaysinh.set(item['values'][3])
+        data_email.set(item['values'][3])
 
     def khoiphuc():
         ndtimkiem.set("")
@@ -35,22 +34,19 @@ def main():
         row=csdl_admin.timkiem_gv(makhoa,ndtimkiem.get())
         update(row)
     def them():
-        csdl_admin.themgv(makhoa,data_email.get(),data_ngaysinh.get(),data_ten.get())
+        csdl_admin.themgv(makhoa,data_email.get(),data_ten.get())
         data_ten.set("")
         data_email.set("")
-        data_ngaysinh.set("")
         khoiphuc()
     def xoa():
         csdl_admin.xoagv(data_magv.get(),data_email.get())
         data_ten.set("")
         data_email.set("")
-        data_ngaysinh.set("")
         khoiphuc()
     def sua():
-        csdl_admin.suagv(data_magv.get(),data_ten.get(),data_ngaysinh.get())
+        csdl_admin.suagv(data_magv.get(),data_ten.get())
         data_ten.set("")
         data_email.set("")
-        data_ngaysinh.set("")
         khoiphuc()
     def menuthongke():
         win.destroy()
@@ -71,17 +67,8 @@ def main():
         file.close()
         win.destroy()
         dangnhap.main()
-    def chonngay(cal,btn):
-        data_ngaysinh.set(csdl.dinh_dang_ngay(cal.get_date()))
-        cal.destroy()
-        btn.destroy()
-        Label(f).pack()
-    def chonlich():
-        
-        cal = Calendar(f,selectmode="day",year=2021,month=8,day=16,bg="white")
-        cal.pack()
-        btn=Button(f,image=img_btnchon,bg="white",command=lambda:chonngay(cal,btn),bd=0,highlightthickness=0)
-        btn.pack()
+
+
 
     win=Tk()
     win.geometry("1000x600+300+120")
@@ -114,7 +101,6 @@ def main():
     makhoa=csdl.makhoa_tu_email(email)
     data_ten=StringVar()
     data_email=StringVar()
-    data_ngaysinh=StringVar()
     ndtimkiem=StringVar()
     data_magv=StringVar()
 
@@ -144,14 +130,11 @@ def main():
     btnxoa.place(x=770,y=240)
     btntimkiem=Button(bg,image=img_btntimkiem,bd=0,highlightthickness=0,command=timkiem)
     btntimkiem.place(x=881,y=292)
-    btnchonlich=Button(bg,image=img_btnchonlich,bd=0,highlightthickness=0,command=chonlich)
-    btnchonlich.place(x=842,y=184)
     btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,command=khoiphuc)
     btnkhoiphuc.place(x=920,y=292)
 
     Entry(bg,font=("Baloo Tamma",11),width=36,textvariable=data_ten,bd=0,highlightthickness=0).place(x=575,y=80)
     Entry(bg,font=("Baloo Tamma",11),width=36,textvariable=data_email,bd=0,highlightthickness=0).place(x=575,y=134)
-    Entry(bg,font=("Baloo Tamma",11),width=25,textvariable=data_ngaysinh,bd=0,highlightthickness=0).place(x=575,y=188)
     Entry(bg,font=("Baloo Tamma",11),width=28,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=652,y=294)
 
     
@@ -162,18 +145,16 @@ def main():
     f.place(x=320,y=30)
 
 
-    tv = ttk.Treeview(bg, columns=(1,2,3,4,5), show="headings")
+    tv = ttk.Treeview(bg, columns=(1,2,3,4), show="headings")
     tv.column(1, width=30,anchor=CENTER)
     tv.column(2, width=80,anchor=CENTER)
     tv.column(3, width=150)
-    tv.column(4, width=80)
-    tv.column(5, width=240)
+    tv.column(4, width=240)
 
     tv.heading(1,text="STT")
     tv.heading(2,text="Mã GV")
     tv.heading(3,text="Tên giảng viên")
-    tv.heading(4,text="Ngày sinh")
-    tv.heading(5,text="Email")
+    tv.heading(4,text="Email")
     tv.place(x=370,y=340)
     tv.bind('<Double 1>', getrow)
     row=csdl_admin.banggv(makhoa)

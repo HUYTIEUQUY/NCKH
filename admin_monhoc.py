@@ -33,7 +33,8 @@ def main():
         data_mamon.set(item['values'][1])
     def them():
         ten=data_tenmon.get()
-        csdl_admin.themmon(makhoa,ten)
+        ma=data_mamon.get()
+        csdl_admin.themmon(ma,makhoa,ten)
         messagebox.showinfo("thông báo","Thêm '"+ten+"' thành công")
         khoiphuc()
     def xoa():
@@ -139,9 +140,10 @@ def main():
     Label(bg,text=tengv,font=("Baloo Tamma",14),fg="#A672BB",bg="white").place(x=45,y=40)
 
     tenkhoa=csdl.tenkhoatuma(makhoa)
-    Label(bg,text=tenkhoa,font=("Baloo Tamma",11),fg="black",bg="white").place(x=605,y=82)
+    
+    Entry(bg,font=("Baloo Tamma",11),width=35,fg="black",bg="white",textvariable=data_mamon,bd=0,highlightthickness=0).place(x=615,y=82)
 
-    Entry(bg,font=("Baloo Tamma",11),width=37,textvariable=data_tenmon,bd=0,highlightthickness=0).place(x=605,y=145)
+    Entry(bg,font=("Baloo Tamma",11),width=35,textvariable=data_tenmon,bd=0,highlightthickness=0).place(x=615,y=145)
     Entry(bg,font=("Baloo Tamma",11),width=28,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=652,y=294)
 
     tv = ttk.Treeview(bg, columns=(1,2,3), show="headings")
