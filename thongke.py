@@ -193,3 +193,5 @@ def main():
     # btnxemthongke.place(x=866,y=176)
     win.mainloop()
 
+if __name__ == '__main__':
+    main()

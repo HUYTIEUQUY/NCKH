@@ -304,3 +304,5 @@ def main():
         lbstb1.place(x=978,y=2)
     win.mainloop()
 
+if __name__ == '__main__':
+    main()

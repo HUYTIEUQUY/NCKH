@@ -76,3 +76,6 @@ def main():
     btnhien=Button(bg,image=img_btnhien,bd=0,highlightthickness=0,command=hien)
     btnhien.place(x=428,y=345)
     win.mainloop()
+
+if __name__ == '__main__':
+    main()

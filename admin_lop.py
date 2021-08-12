@@ -99,7 +99,6 @@ def main():
         d=file.read().split()
     email=d[0]
     makhoa=csdl.makhoa_tu_email(email)
-    print(makhoa)
     tenlop=StringVar()
     malop=StringVar()
     ndtimkiem=StringVar()
@@ -159,3 +158,5 @@ def main():
     update(row)
     win.mainloop()
 
+if __name__ == '__main__':
+    main()

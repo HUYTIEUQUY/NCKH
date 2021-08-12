@@ -178,3 +178,5 @@ def main():
     update(row)
     win.mainloop()
 
+if __name__ == '__main__':
+    main()

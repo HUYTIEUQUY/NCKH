@@ -300,3 +300,6 @@ def main(matkb,malop):
     print(matkb)
     win.mainloop()
 
+
+if __name__ == '__main__':
+    main()
