@@ -106,6 +106,7 @@ def main():
     img_bg1=ImageTk.PhotoImage(file="img/thongke2.png")
     img_bg2=ImageTk.PhotoImage(file="img/thongke3.png")
     img_bg3=ImageTk.PhotoImage(file="img/thongke4.png")
+    img_erorr=ImageTk.PhotoImage(file="img/bg_thongke_erorr.png")
     
     ing_menuthem=ImageTk.PhotoImage(file="img/menuthemdl1.png")
     ing_menudiemdanh=ImageTk.PhotoImage(file="img/menudiemdanh.png")
@@ -138,49 +139,52 @@ def main():
 
     tengv=csdl.tim_tengv_tu_email()
     Label(bg,text=tengv,font=("Baloo Tamma",14),fg="#A672BB",bg="white").place(x=45,y=40)
-
-
-
-    
-
-
-
-
-
-    
-    f=Frame(bg,bg="green")
-    f.place(x=367,y=270)
-    
-    tv = ttk.Treeview(f, columns=(1,2,3), show="headings")
-    tv.column(1, width=150 ,anchor=CENTER)
-    tv.column(2, width=240)
-    tv.column(3, width=150,anchor=CENTER)
-    tv.heading(1,text="Mã số sinh viên")
-    tv.heading(2,text="Họ và tên")
-    tv.heading(3,text="Điểm danh")
-    tv.pack()
-
-    f1=Frame(bg)
-    f1.place(x=462,y=109)
-    f2=Frame(bg)
-    f2.place(x=462,y=155)
-    f3=Frame(bg)
-    f3.place(x=747,y=109)
-    f4=Frame(bg)
-    f4.place(x=747,y=155)
-
     magv=csdl.tim_magv_tu_email()
-    data_lop=csdl.tim_lop_trong_diemdanh(magv)
-    cb_lop=Combobox(f1,width=20,values=data_lop, font=("Baloo Tamma",12))
-    cb_lop.current(0)
-    cb_lop.pack()
-    malop=csdl.tenlop_thanh_ma(str(cb_lop.get()))
-    mamh=StringVar()
-    ngay=StringVar()
-    ca=StringVar()
-    data=StringVar()
-    btnchon=Button(bg,image=ing_chon,bd=0,highlightthickness=0,command=chon1)
-    btnchon.place(x=881,y=176)
+    
+
+    a=csdl.tim_lop_trong_diemdanh(magv)
+    
+    if csdl.tim_lop_trong_diemdanh(magv)==[]:
+        anhnen=bg.create_image(500,300,image=img_erorr)
+    else:
+        f=Frame(bg,bg="green")
+        f.place(x=367,y=270)
+        tv = ttk.Treeview(f, columns=(1,2,3), show="headings")
+        tv.column(1, width=150 ,anchor=CENTER)
+        tv.column(2, width=240)
+        tv.column(3, width=150,anchor=CENTER)
+        tv.heading(1,text="Mã số sinh viên")
+        tv.heading(2,text="Họ và tên")
+        tv.heading(3,text="Điểm danh")
+        tv.pack()
+
+        f1=Frame(bg)
+        f1.place(x=462,y=109)
+        f2=Frame(bg)
+        f2.place(x=462,y=155)
+        f3=Frame(bg)
+        f3.place(x=747,y=109)
+        f4=Frame(bg)
+        f4.place(x=747,y=155)
+
+        
+        data_lop=csdl.tim_lop_trong_diemdanh(magv)
+        cb_lop=Combobox(f1,width=20,values=data_lop, font=("Baloo Tamma",12))
+        cb_lop.current(0)
+        cb_lop.pack()
+        malop=csdl.tenlop_thanh_ma(str(cb_lop.get()))
+        mamh=StringVar()
+        ngay=StringVar()
+        ca=StringVar()
+        data=StringVar()
+        btnchon=Button(bg,image=ing_chon,bd=0,highlightthickness=0,command=chon1)
+        btnchon.place(x=881,y=176)
+
+
+
+
+
+    
 
 
 

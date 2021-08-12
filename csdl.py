@@ -1,7 +1,9 @@
+import re
 from tkinter import messagebox
 import mysql.connector
 import socket 
 import datetime
+from datetime import datetime
 
 conn = mysql.connector.connect(
   host="localhost",
@@ -137,7 +139,7 @@ def tengv_thanh_ma(ten):
 
 #---------------------------------------------------------------------------------------------
 def bangdiemdanh(mlop,mmon,ca,ngay):
-    x=datetime.datetime.now()
+    
     cur = conn.cursor()
     cur.execute("SELECT TenSV, DiemDanh FROM diemdanh,sinhvien,monhoc Where sinhvien.MaSV=diemdanh.MaSV AND diemdanh.MaMH=monhoc.MaMH AND Ngay like '"+str(ngay)+"' AND MaLopp=MaLop AND MaLopp="+str(mlop)+" AND monhoc.MaMH ="+str(mmon)+" AND Ca like '"+ca+"'")
     row = cur.fetchall()
@@ -196,9 +198,10 @@ def tim_tengv_tu_email():
 #------------------------------------------------------------------------------------------
 def hien_lop_theo_tkb(magv,ca):
    
-    x=datetime.datetime.now()
+    x=datetime.now()
+    ngay=x.strftime("%x")
     cur = conn.cursor()
-    cur.execute("SELECT TenLop FROM chitiettkb, lop where lop.MaLop=chitiettkb.MaLop AND Ngay like '"+dinh_dang_ngay(str(x.strftime("%x")))+"' AND MaGV="+str(magv)+" AND Ca like '%"+str(ca)+"%'")
+    cur.execute("SELECT TenLop FROM chitiettkb, lop where lop.MaLop=chitiettkb.MaLop AND Ngay like '"+dinh_dang_ngay(str(ngay))+"' AND MaGV="+str(magv)+" AND Ca like '%"+str(ca)+"%'")
     a=[]
     while True:
         row = cur.fetchone()
@@ -211,7 +214,7 @@ def hien_lop_theo_tkb(magv,ca):
         
 #---------------------------------------------------------------------------------------------------
 def hien_mon_theo_tkb(magv, ca):
-    x=datetime.datetime.now()
+    x=datetime.now()
     cur = conn.cursor()
     cur.execute("SELECT TenMH FROM chitiettkb, monhoc where monhoc.MaMH=chitiettkb.MaMH AND MaGV="+str(magv)+" AND Ca like '%"+str(ca)+"%' AND Ngay like '"+dinh_dang_ngay(str(x.strftime("%x")))+"'" )
     a=[]
@@ -242,22 +245,15 @@ def lay_id_theo_lop(malop):#lấy danh sách sinh viên theo lớp dựa vào m�
         a.append(row[0])
     return a
 #---------------------------------------------------------------------------------------------
-def diem_danh_vao_csdl(a,b,malop,mamh,magv,ca,ngay):
-    c=[]
-    for i in range(0,len(a)):
-        if a[i] in b:
-            c.append("có")
-        else:
-            c.append("vắng")
+def diem_danh_vao_csdl(a,b,malop,mamh,magv,ca,tg):
     cur = conn.cursor()
-    for i in range(0,len(a)):
-        cur.execute("Insert into diemdanh(MaSV,DiemDanh,Ngay,MaLopp,MaMH,MaGV,Ca) values ("+str(a[i])+",'"+str(c[i])+"','"+str(ngay)+"',"+str(malop)+","+str(mamh)+", "+str(magv)+" ,'"+str(ca)+"')")
+    cur.execute("Insert into diemdanh(MaSV,DiemDanh,MaLopp,MaMH,MaGV,Ca,Ngay) values ("+str(a)+",'"+str(b)+"',"+str(malop)+","+str(mamh)+", "+str(magv)+" ,'"+str(ca)+"','"+str(tg)+"')")
     conn.commit()
 #--------------------------------------------------------------------kết thúc hàm diem_danh_vao_csdl
 def kt_dd(malop,mamh,mgv):
     cur = conn.cursor()
-    x=datetime.datetime.now()
-    cur.execute("SELECT TrangThaiDD FROM chitiettkb where MaMH="+str(mamh)+" AND Ngay ='"+dinh_dang_ngay(str(x.strftime("%x")))+"' AND MaLop="+str(malop)+" AND MaGV="+str(mgv)+"")
+    x=datetime.now()
+    cur.execute("SELECT TrangThaiDD FROM chitiettkb where MaMH='"+str(mamh)+"' AND Ngay ='"+dinh_dang_ngay(str(x.strftime("%x")))+"' AND MaLop="+str(malop)+" AND MaGV="+str(mgv)+"")
     a=[]
     while True:
         row = cur.fetchone()
@@ -273,23 +269,17 @@ def update_TT_diemdanh(malop,mamh,magv,ngay):
     conn.commit()
 #------------------------------------------------------------------------------
 def cahoc():
-    now = datetime.datetime.now()
-    today7h30 = now.replace(hour=7, minute=30, second=0, microsecond=0)
-    today9h30 = now.replace(hour=9, minute=30, second=0, microsecond=0)
-    today11h45 = now.replace(hour=12, minute=45, second=0, microsecond=0)
-    today13h00 = now.replace(hour=13, minute=00, second=0, microsecond=0)
-    today15h20 = now.replace(hour=15, minute=20, second=0, microsecond=0)
-    today17h20 = now.replace(hour=17, minute=20, second=0, microsecond=0)
-    if now>=today7h30 and now <= today9h30:
-        return "1"
-    elif now >= today9h30 and now<= today11h45:
-        return "2"
-    elif now >= today13h00 and now<= today15h20:
-        return "3"
-    elif now >= today15h20 and now<= today17h20:
-        return "4"
-    else:
-        return "ca không hợp lệ"
+    time = datetime.now()
+    now = time.strftime("%H:%M:%S")
+    cur = conn.cursor()
+    cur.execute("SELECT `TenCa` FROM `ca` WHERE TG_BD <= '"+str(now)+"' AND TG_KT >='"+str(now)+"'")
+    try:
+        row = cur.fetchone()
+        row=row[0]
+    except:
+        row="0"
+    return row
+
 #-----------------------------------------------------------------------------------------------
 def tim_gv_trong_khoa(makhoa):
     cur = conn.cursor()
@@ -349,7 +339,7 @@ def dinh_dang_ngay(ngay):
     return ngay
 
 def xoadiemdanh(malop,mamh,mgv,ca):
-    ngay= datetime.datetime.now()
+    ngay=datetime.now()
     ngay=dinh_dang_ngay(ngay.strftime("%x"))
     cur=conn.cursor()
     cur.execute("DELETE FROM diemdanh WHERE Ngay like '"+str(ngay)+"' AND MaMH = "+str(mamh)+" AND MaGV="+str(mgv)+" AND Ca ='"+str(ca)+"' AND MaLopp= "+str(malop)+"")
@@ -369,7 +359,7 @@ def tenkhoatuma(ma):
     return a
 
 def ngay():
-    now = datetime.datetime.now()
+    now = datetime.now()
     ngay=dinh_dang_ngay(now.strftime("%x"))
     return ngay
 

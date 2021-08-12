@@ -15,7 +15,8 @@ def main():
     def thongbaodd():
         win.destroy()
         diemdanhbu.main()
-        
+    def thietlap():
+        return
     def lichgiang():
         win.destroy()
         taikhoan_thongbao.main()
@@ -55,6 +56,7 @@ def main():
     ing_btndangxuat1=ImageTk.PhotoImage(file="img/btndangxuat1.png")
     ing_btndoimatkhau=ImageTk.PhotoImage(file="img/btndoimatkhau.png")
     ing_btnthongbao=ImageTk.PhotoImage(file="img/btnthongbao.png")
+    ing_btnthietlap=ImageTk.PhotoImage(file="img/thietlap.png")
     ing_btnquaylai=ImageTk.PhotoImage(file="img/btnquaylai.png")
 #------------------------------------------------------------------------------
     ten_thiet_bi = socket.gethostname()
@@ -142,6 +144,9 @@ def main():
 
     btndangxuat1=Button(bg,image=ing_btndangxuat1,bd=0,highlightthickness=0,command=dangxuat)
     btndangxuat1.place(x=836,y=537)
+
+    btnthietlap=Button(bg,image=ing_btnthietlap,bd=0,highlightthickness=0,command=thietlap)
+    btnthietlap.place(x=949,y=2)
     
     win.mainloop()
 

@@ -21,6 +21,7 @@ import diemdanhbu
 # import os
 import numpy as np
 from tkinter import ttk
+from datetime import datetime
 import re
 
 
@@ -60,9 +61,22 @@ def main():
         tv.delete(*tv.get_children())
         for i in row:
             tv.insert('','end',values=i)
+    def doigiay(s):
+        h=str(s)[0:1]
+        p=str(s)[2:4]
+        s=str(s)[5:7]
+        giay=int(h)*60*60+int(p)*60+int(s)
+        return giay
     def batdaudiemdanh():
+
         messagebox.showwarning("thông báo","Nhấn 'q' để thoát ")
+        tgbd= datetime.now()
         malop=csdl.tenlop_thanh_ma(data_lop)
+        mamh=csdl.tenmon_thanh_ma(data_mon)
+        magv=csdl.tim_magv_tu_email()
+        ca=csdl.cahoc()
+        ngay=csdl.ngay()
+        
         a=csdl.lay_id_theo_lop(malop)#------------------lấy id theo lop
 
         lopp=khong_dau(data_lop.replace(" ","_"))
@@ -100,7 +114,7 @@ def main():
                 for face_encoding in face_encodings:
                     # Xem khuôn mặt có khớt cới các khuôn mặt đã biết không
                     matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
-                    name = "Unknown"
+                    name = "Khongbiet"
                     #Đưa ra các khoảng cách giữa các khuôn mặt và khuôn mặt đã biết
                     face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
                     best_match_index = np.argmin(face_distances) #Cái nào gần hơn thì lưu vào biến best_match_index
@@ -108,9 +122,21 @@ def main():
                         name = known_face_names[best_match_index]
                         
                     face_names.append(name)
-                    if name not in diemdanh:
-                        # speak(ref_dictt[name]+" đã điểm danh")
+                    now = datetime.now()
+                    kq=now-tgbd
+                    s=doigiay(kq)
+                    
+                    if name not in diemdanh and s>=60:
+                        
+                        tre="Trể "+str(kq)[0:7]
+                        csdl.diem_danh_vao_csdl(name,tre,malop,mamh,magv,ca,ngay)
                         diemdanh.append(name)
+                    elif name not in diemdanh :
+                        print("đúng giờ")
+                        print(diemdanh)
+                        csdl.diem_danh_vao_csdl(name,"có",malop,mamh,magv,ca,ngay)
+                        diemdanh.append(name)
+                        
             process_this_frame = not process_this_frame
             
 
@@ -135,14 +161,12 @@ def main():
                 break
         video_capture.release()
         cv2.destroyAllWindows()
-
+        
         #----------------------------------------------------------------------------
-        malop=csdl.tenlop_thanh_ma(data_lop)
-        mamh=csdl.tenmon_thanh_ma(data_mon)
-        magv=csdl.tim_magv_tu_email()
-        ca=csdl.cahoc()
-        ngay=csdl.ngay()
-        csdl.diem_danh_vao_csdl(a,diemdanh,malop,mamh,magv,ca,ngay)
+        for i in range(0,len(a)):
+            if a[i] not in diemdanh:
+                csdl.diem_danh_vao_csdl(a[i],"không",malop,mamh,magv,ca,ngay)
+        
         csdl.update_TT_diemdanh(malop,mamh,magv,ngay)
         
         row=csdl.bangdiemdanh(malop,mamh,ca,ngay)
