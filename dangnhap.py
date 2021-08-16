@@ -22,26 +22,34 @@ def main():
             txtPass["show"]=""
         else:
             txtPass["show"]="*"
+    def kt_dangnhap(email,passw):
+        if email=="" or passw=="":
+            messagebox.showwarning("thông báo","Hãy nhập đầy đủ dữ liệu")
+            return False
+        elif len(passw)!=8:
+            messagebox.showwarning("thông báo","Vui lòng kiểm tra lại mật khẩu")
+            return False
+        elif csdl.dangnhap(email, passw) == []:
+             messagebox.showerror("Thông báo","Đăng nhập không thành công")
+             return False
+        else:
+            return True
     def dangnhap():
         email=data_e.get()
         passw=data_p.get()
-        if csdl.dangnhap(email, passw) == []:
-            messagebox.showerror("Thông báo","Đăng nhập không thành công")
-        else:
+        if kt_dangnhap(email, passw) == True:
             ten_thiet_bi = socket.gethostname()
             with open(ten_thiet_bi+".txt","w") as file:
                 file.write(email+"\n")
                 file.write(passw)
             if csdl.KT_loaitk(email) == "add":
-                messagebox.showinfo("Thông báo", "Đăng nhập thành công")
                 win.destroy()
                 admin_lop.main()
 
             else:
-                messagebox.showinfo("Thông báo", "Đăng nhập thành công")
                 win.destroy()
                 diemdanhsv.main()
-
+        else: return
         
         
 

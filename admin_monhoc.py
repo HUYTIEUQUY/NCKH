@@ -7,12 +7,12 @@ import csdl_admin
 from tkinter import messagebox
 import dangnhap
 import socket
-
+import string
 import admin_lop
 import admin_giangvien
 import admin_thongke
 import admin_tkb
-
+import string
 
 
 def main():
@@ -31,15 +31,38 @@ def main():
         item=tv.item(tv.focus())
         data_tenmon.set(item['values'][2])
         data_mamon.set(item['values'][1])
+        data_mamonsx.set(item['values'][1])
+
+    def kt_dau_khoangcach(s):
+        return bool(s and s.strip())
+
+    def kt_nhap(ma,ten):
+        if ma=="" or ten=="" :
+            messagebox.showwarning("thông báo","Hãy nhập đầy đủ dữ liệu")
+        elif len(str(ma)) <6 or ma.isnumeric()== False :
+            messagebox.showerror("thông báo","Mã môn học phải ít nhất 6 kí tự và là số")
+            return False
+        elif kt_dau_khoangcach(ten)==False :
+            messagebox.showwarning("thông báo","Dữ liệu tên môn học không hợp lệ")
+            return False
+        elif csdl_admin.kt_ma_mh(ma) !=[]:
+            messagebox.showerror("thông báo","Mã môn học đã tồn tại")
+            return False
+        elif csdl_admin.kt_ten_mh(ten) !=[]:
+            messagebox.showerror("thông báo","Môn học này đã tồn tại")
+            return False
+        else:
+            return True
+
     def them():
         ten=data_tenmon.get()
         ma=data_mamon.get()
-        csdl_admin.themmon(ma,makhoa,ten)
-        messagebox.showinfo("thông báo","Thêm '"+ten+"' thành công")
-        khoiphuc()
+        if kt_nhap(ma,ten) == True:
+            csdl_admin.themmon(ma,makhoa,ten)
+            messagebox.showinfo("thông báo","Thêm '"+ten+"' thành công")
+            khoiphuc()
     def xoa():
         ma=data_mamon.get()
-        
         if messagebox.askyesno("thông báo","Bạn có thực sự muốn xoá"):
             csdl_admin.xoamon(ma)
             khoiphuc()
@@ -48,8 +71,22 @@ def main():
     def sua():
         ma=data_mamon.get()
         ten=data_tenmon.get()
-        csdl_admin.suamon(ma,ten)
-        khoiphuc()
+        ten=str(ten).replace("  "," ")
+        if data_mamonsx.get() == "" :
+            messagebox.showerror("thông báo","Bạn chưa có dữ liệu sửa. Hãy nhấn 2 lần vào dòng muốn sửa, thay đổi tên và nhấn nút 'sửa'")
+        elif ma!=data_mamonsx.get():
+            messagebox.showwarning("thông báo","Bạn không thể sửa mã môn học")
+            data_mamon.set(data_mamonsx.get())
+        elif ten=="" :
+            messagebox.showwarning("thông báo","Hãy nhập đầy đủ dữ liệu")
+        elif kt_dau_khoangcach(ten)==False :
+            messagebox.showwarning("thông báo","Dữ liệu tên môn học không hợp lệ")
+        elif csdl_admin.kt_ten_mh(ten) !=[]:
+            messagebox.showerror("thông báo","Môn học này đã tồn tại")
+        else:
+            
+            csdl_admin.suamon(ma,ten)
+            khoiphuc()
     def timkiem():
         row=csdl_admin.timmon(makhoa,ndtimkiem.get())
         update(row)
@@ -104,6 +141,7 @@ def main():
     makhoa=csdl.makhoa_tu_email(email)
     data_tenmon=StringVar()
     data_mamon=StringVar()
+    data_mamonsx=StringVar()
     ndtimkiem=StringVar()
 
 #-------------------------------------------------------------------------------

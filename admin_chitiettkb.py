@@ -48,6 +48,10 @@ def main(matkb,malop):
         row=csdl_admin.timkiem_dongtkb(matkb,ndtimkiem.get())
         update(row)
     def khoiphuc():
+        ngaycu.set("")
+        moncu.set("")
+        gvcu.set("")
+        cacu.set("")
         ndtimkiem.set("")
         data_ca.set("")
         data_gv.set("")
@@ -70,23 +74,26 @@ def main(matkb,malop):
             ca2=data_ca[1:2]
         else:
             ca1=ca2=data_ca
-        if(csdl_admin.KT_lichgiang(ngay,magv,ca1)== None and csdl_admin.KT_lichgiang(ngay,magv,ca2)== None):
-            if(csdl_admin.KT_lich_tkb(ngay,malop,data_ca)== None):
-                csdl_admin.them_tkb(matkb,magv,malop,mamh,ngay,data_ca)
-                messagebox.showinfo("thông báo", "Đã thêm 1 dòng vào thời khoá biểu ")
-                khoiphuc()
-            else:
-                messagebox.showerror("thông báo","Lớp đã có lịch học !")
-        else:
+
+
+        if data_ca=="" or magv=="" or mamh=="" or ngay =="":
+            messagebox.showerror("thông báo","Hãy chọn đầy đủ dữ liệu")
+        elif(csdl_admin.KT_lichgiang(ngay,magv,ca1)!= None and csdl_admin.KT_lichgiang(ngay,magv,ca2)!= None):
             messagebox.showerror("thông báo","Giảng viên đã có lịch dạy !")
-        khoiphuc()
+        elif(csdl_admin.KT_lich_tkb(ngay,malop,data_ca)!= None):
+            messagebox.showerror("thông báo","Lớp đã có lịch học !")
+        else:
+            csdl_admin.them_tkb(matkb,magv,malop,mamh,ngay,data_ca)
+            messagebox.showinfo("thông báo", "Đã thêm 1 dòng vào thời khoá biểu ")
+            khoiphuc()
+            
     def sua():
         #dữ liệu chưa cập nhật
         ngay_cu=ngaycu.get()
         mon_cu=csdl.tenmon_thanh_ma(moncu.get())
         gv_cu=csdl.tengv_thanh_ma(gvcu.get())
         ca_cu=cacu.get()
-        csdl_admin.xoa_dong_tkb(ngay_cu,mon_cu,gv_cu,ca_cu)
+        # 
         #du liệu cập nhật
         magv=csdl.tengv_thanh_ma(data_gv.get())
         mamh = csdl.tenmon_thanh_ma(data_mon.get())
@@ -103,22 +110,20 @@ def main(matkb,malop):
         else:
             ca1=ca2=data_ca
         
-        if(ngaycu.get()!= ""):
-            if(csdl_admin.KT_lichgiang(ngay,magv,ca1)== None and csdl_admin.KT_lichgiang(ngay,magv,ca2)== None):
-                if(csdl_admin.KT_lich_tkb(ngay,malop,data_ca)== None):
-                    csdl_admin.them_tkb(matkb,magv,malop,mamh,ngay,data_ca)
-                    
-                    messagebox.showinfo("thông báo", "Đã thêm 1 dòng vào thời khoá biểu ")
-                    khoiphuc()
-                else:
-                    messagebox.showerror("thông báo","Lớp đã có lịch học !")
-                    csdl_admin.them_tkb(matkb,gv_cu,malop,mon_cu,ngay,ca_cu)
-            else:
-                messagebox.showerror("thông báo","Giảng viên đã có lịch dạy !")
-                csdl_admin.them_tkb(matkb,gv_cu,malop,mon_cu,ngay,ca_cu)
+        if(ngaycu.get()== ""):
+            messagebox.showerror("thông báo","không tìm thấy dữ liệu cần sửa ! Bạn hãy nhấn 2 lần vào dòng muốn sửa , rồi sửa dữ liệu và nhấn nút sửa")
+        elif data_ca=="" or magv=="" or mamh=="" or ngay =="":
+            messagebox.showerror("thông báo","Hãy chọn đầy đủ dữ liệu")
+        elif(csdl_admin.KT_lichgiang(ngay,magv,ca1) != None and csdl_admin.KT_lichgiang(ngay,magv,ca2) != None):
+            messagebox.showerror("thông báo","Giảng viên đã có lịch dạy !")
+        elif(csdl_admin.KT_lich_tkb(ngay,malop,data_ca)!= None):
+            messagebox.showerror("thông báo","Lớp đã có lịch học !")
         else:
-            messagebox.showerror("thông báo","không tìm thấy dữ liệu cần sửa !")
-            csdl_admin.them_tkb(matkb,gv_cu,malop,mon_cu,ngay,ca_cu)
+            csdl_admin.xoa_dong_tkb(ngay_cu,mon_cu,gv_cu,ca_cu)
+            csdl_admin.them_tkb(matkb,magv,malop,mamh,ngay,data_ca)
+            messagebox.showinfo("thông báo", "Đã thêm 1 dòng vào thời khoá biểu ")
+            khoiphuc()
+               
 
     def xoa():
         magv=csdl.tengv_thanh_ma(data_gv.get())
@@ -128,8 +133,12 @@ def main(matkb,malop):
         for i in range(len(ca)):
             if ca[i].get() >= 1:
                 data_ca += str(i)
-        csdl_admin.xoa_dong_tkb(ngay,mamh,magv,data_ca)
-        khoiphuc()
+        if ngay=="":
+            messagebox.showerror("thông báo","Không tìm thấy dữ liệu cần xoá.\n Bạn hãy nhấn 2 lần vào dòng muốn xoá và nhấn nút 'xoá'")
+        else:
+            csdl_admin.xoa_dong_tkb(ngay,mamh,magv,data_ca)
+            messagebox.showinfo("thông báo","Đã xoá khỏi thời khoá biểu")
+            khoiphuc()
     def menuthongke():
         win.destroy()
         admin_thongke.main()
@@ -153,15 +162,20 @@ def main(matkb,malop):
         data_ngay.set(csdl.dinh_dang_ngay(cal.get_date()))
         cal.destroy()
         btn.destroy()
-        Label(f).pack()
+        lb.config(text="|")
+        btnchonlich.config(command=chonlich)
     def chonlich():
-        cal = Calendar(f,selectmode="day",year=2021,month=8,day=16,bg="white")
+        cal = Calendar(lb,selectmode="day",year=2021,month=8,day=16,bg="white")
         cal.pack()
         btn=Button(f,image=img_btnchon,bg="white",command=lambda:chonngay(cal,btn),bd=0,highlightthickness=0)
         btn.pack()
+        btnchonlich.config(command=tam)
     def trolai():
         win.destroy()
         admin_tkb.main()
+
+    def tam():
+        return
 
     win=Tk()
     win.geometry("1000x600+300+120")
@@ -193,6 +207,7 @@ def main(matkb,malop):
         d=file.read().split()
     email=d[0]
     makhoa=csdl.makhoa_tu_email(email)
+    
     tenlop=csdl_admin.ma_lop_thanh_ten(malop)
     data_gv=StringVar()
     data_mon=StringVar()
@@ -235,6 +250,7 @@ def main(matkb,malop):
     btntimkiem.place(x=881,y=292)
     btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,command=khoiphuc)
     btnkhoiphuc.place(x=920,y=292)
+
     btnchonlich=Button(bg,image=img_btnchonlich,bd=0,highlightthickness=0,command=chonlich)
     btnchonlich.place(x=858,y=165)
     btntrolai=Button(bg,image=img_btntrolai,bd=0,highlightthickness=0,command=trolai)
@@ -274,7 +290,9 @@ def main(matkb,malop):
 
     f=Frame(bg)
     f.place(x=320,y=30)
-    
+    lb=Label(f)
+    lb.pack()
+
     Entry(bg,font=("Baloo Tamma",11),width=28,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=652,y=294)
 
     tv = ttk.Treeview(bg, columns=(1,2,3,4,5), show="headings")
@@ -297,7 +315,6 @@ def main(matkb,malop):
 
    
     update(row)
-    print(matkb)
     win.mainloop()
 
 

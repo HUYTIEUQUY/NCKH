@@ -6,7 +6,6 @@ import csdl
 from tkinter import messagebox
 import dangnhap
 import socket
-import mysql.connector
 import pickle
 import cv2
 import face_recognition

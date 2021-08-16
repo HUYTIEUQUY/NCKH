@@ -24,6 +24,7 @@ def dangnhap(email,matkhau):
         if row == None:
             break
         a.append(row[0])
+        conn.commit()
     return a
 
 def KT_loaitk(email):
@@ -36,6 +37,7 @@ def KT_loaitk(email):
         if row == None:
             break
         a=row[0]
+    conn.commit()
     return a
 
 
@@ -53,6 +55,7 @@ def lay_ten_bang(tenbang):
             break
             
         a.append(row[1])
+    conn.commit()
     return a
 
 #----------------------------------------------kết thúc hàm lay_ten_bang
@@ -63,14 +66,13 @@ def tenkhoa_thanh_ma(ten):
     a=""
     while True:
         row = cur.fetchone()
-        
         if row == None:
             break
         a=row[0]
+    conn.commit()
     return a
 #-----------------------------------------------kết thúc hàm tên khoa thành mã
 def lop_theo_khoa(makhoa):
-    
     cur = conn.cursor()
     cur.execute("SELECT TenLop FROM lop WHERE MaKhoa like '"+str(makhoa)+"'")
     a=[]
@@ -80,10 +82,10 @@ def lop_theo_khoa(makhoa):
         if row == None:
             break
         a.append(row[0])
+    conn.commit()
     return a
 #------------------------------------------------kết thúc hàm lớp theo khoa
 def tenlop_thanh_ma(ten):
-    
     cur = conn.cursor()
     cur.execute("SELECT MaLop FROM lop Where TenLop Like '"+str(ten)+"'")
     a=""
@@ -93,6 +95,7 @@ def tenlop_thanh_ma(ten):
         if row == None:
             break
         a=row[0]
+    conn.commit()
     return a
 #----------------------------------------------------Kết thúc hàm tenlop_thanh_ma
 
@@ -107,6 +110,7 @@ def mon_theo_khoa(makhoa):
         if row == None:
             break
         a.append(row[0])
+    conn.commit()
     return a
 
 #------------------------------------------------------------------------------------------
@@ -121,6 +125,7 @@ def tenmon_thanh_ma(ten):
         if row == None:
             break
         a=row[0]
+    conn.commit()
     return a
 #--------------------------------------------------------------------------------------------
 
@@ -135,6 +140,7 @@ def tengv_thanh_ma(ten):
         if row == None:
             break
         a=row[0]
+    conn.commit()
     return a
 
 #---------------------------------------------------------------------------------------------
@@ -143,6 +149,7 @@ def bangdiemdanh(mlop,mmon,ca,ngay):
     cur = conn.cursor()
     cur.execute("SELECT TenSV, DiemDanh FROM diemdanh,sinhvien,monhoc Where sinhvien.MaSV=diemdanh.MaSV AND diemdanh.MaMH=monhoc.MaMH AND Ngay like '"+str(ngay)+"' AND MaLopp=MaLop AND MaLopp="+str(mlop)+" AND monhoc.MaMH ="+str(mmon)+" AND Ca like '"+ca+"'")
     row = cur.fetchall()
+    conn.commit()
     return row
 #-----------------------------------------------------------------------------
 
@@ -157,6 +164,7 @@ def makhoa_tu_email(email):
         if row == None:
             break
         a=row[0]
+    conn.commit()
     return a
 
 
@@ -176,6 +184,7 @@ def tim_magv_tu_email():
         if row == None:
             break
         a=row[0]
+    conn.commit()
     return a
 #-------------------------------------------------------------------------------------------
 def tim_tengv_tu_email():
@@ -193,6 +202,7 @@ def tim_tengv_tu_email():
         if row == None:
             break
         a=row[0]
+    conn.commit()
     return a
 
 #------------------------------------------------------------------------------------------
@@ -210,6 +220,7 @@ def hien_lop_theo_tkb(magv,ca):
             break
         if row[0] not in a:
             a=row[0]
+        conn.commit()
     return a
         
 #---------------------------------------------------------------------------------------------------
@@ -225,6 +236,7 @@ def hien_mon_theo_tkb(magv, ca):
             break
         if row[0] not in a:
             a= row[0]
+    conn.commit()
     return a
 
 
@@ -243,6 +255,7 @@ def lay_id_theo_lop(malop):#lấy danh sách sinh viên theo lớp dựa vào m�
             break
             
         a.append(row[0])
+    conn.commit()
     return a
 #---------------------------------------------------------------------------------------------
 def diem_danh_vao_csdl(a,b,malop,mamh,magv,ca,tg):
@@ -261,6 +274,7 @@ def kt_dd(malop,mamh,mgv):
         if row == None:
             break
         a=row[0]
+    conn.commit()
     return a
 def update_TT_diemdanh(malop,mamh,magv,ngay):
     cur = conn.cursor()
@@ -278,18 +292,20 @@ def cahoc():
         row=row[0]
     except:
         row="0"
+    conn.commit()
     return row
 
 #-----------------------------------------------------------------------------------------------
 def tim_gv_trong_khoa(makhoa):
     cur = conn.cursor()
-    cur.execute("SELECT TenGV FROM giangvien WHERE MaKhoa like '"+str(makhoa)+"'")
+    cur.execute("SELECT TenGV FROM giangvien,dangnhap WHERE giangvien.Email=dangnhap.Email AND MaKhoa like '"+str(makhoa)+"' AND LoaiTK= 'user'")
     a=[]
     while True:
         row = cur.fetchone()
         if row == None:
             break
         a.append(row[0])
+    conn.commit()
     return a
 #-----------------------------------------------------------------------------------------------------
 def KT_MaTKB(mlop):
@@ -304,6 +320,7 @@ def KT_MaTKB(mlop):
         if row == None:
             break
         a.append(row[0])
+    conn.commit()
     return a
 #-----------------------------------------------------------------------------------------
 def tao_tkb(mlop):
@@ -321,6 +338,7 @@ def bangtkb(matkb):
     cur = conn.cursor()
     cur.execute("SELECT TenMH, TenGV,Ngay,Ca FROM chitiettkb, monhoc, giangvien WHERE chitiettkb.MaMH=monhoc.MaMH AND giangvien.MaGV = chitiettkb.MaGV AND MaTKB ="+str(matkb)+"")
     row = cur.fetchall()
+    conn.commit()
     return row
 
 
@@ -335,7 +353,6 @@ def dinh_dang_ngay(ngay):
         ngay=d[0]+"/"+d[1]+"/"+d[2]
     else:
         ngay=d[1]+"/"+d[0]+"/20"+d[2]
-        
     return ngay
 
 def xoadiemdanh(malop,mamh,mgv,ca):
@@ -356,11 +373,13 @@ def tenkhoatuma(ma):
         if row == None:
             break
         a=row[0]
+    conn.commit()
     return a
 
 def ngay():
     now = datetime.now()
     ngay=dinh_dang_ngay(now.strftime("%x"))
+    conn.commit()
     return ngay
 
 def cagiang(magv,l,m,c):
@@ -374,6 +393,7 @@ def cagiang(magv,l,m,c):
         l.append(row[0])
         m.append(row[1])
         c.append(row[2])
+    conn.commit()
     if l != []:
         return True
     else:
@@ -391,6 +411,7 @@ def gvdiemdanh(magv,ngaydd,tenlopdd,tenmhdd,cadd):
         tenlopdd.append(row[1])
         tenmhdd.append(row[2])
         cadd.append(row[3])
+    conn.commit()
     if ngaydd != []:
         return True
     else:
@@ -402,6 +423,7 @@ def diemdanhbu(magv):
     cur = conn.cursor()
     cur.execute("SELECT Ngay, TenLop,TenMH,Ca FROM chitiettkb, monhoc, lop WHERE chitiettkb.MaMH=monhoc.MaMH AND lop.MaLop = chitiettkb.MaLop AND MaGV ="+str(magv)+" AND TrangThaiDD like 'chưa' AND Ngay <= '"+str(ngay())+"'")
     row = cur.fetchall()
+    conn.commit()
     return row
 
 def tim_lop_trong_diemdanh(MaGV):
@@ -413,6 +435,7 @@ def tim_lop_trong_diemdanh(MaGV):
         if row == None:
             break
         a.append(row[0])
+    conn.commit()
     return a
 
 def tim_mon_trong_diemdanh(MaGV,malop):
@@ -424,6 +447,7 @@ def tim_mon_trong_diemdanh(MaGV,malop):
         if row == None:
             break
         a.append(row[0])
+    conn.commit()
     return a
 
 def tim_ngay_trong_diemdanh(MaGV,malop,mamh):
@@ -435,6 +459,7 @@ def tim_ngay_trong_diemdanh(MaGV,malop,mamh):
         if row == None:
             break
         a.append(row[0])
+    conn.commit()
     return a
 
 def tim_ca_trong_diemdanh(MaGV,malop,mamh,ngay):
@@ -446,24 +471,39 @@ def tim_ca_trong_diemdanh(MaGV,malop,mamh,ngay):
         if row == None:
             break
         a.append(row[0])
+    conn.commit()
     return a
 
 def thongke(magv,ngay,mamh,lop,ca):
+    if magv =="":
+        magv=0
+    if ngay =="":
+        ngay=0
+    if mamh =="":
+        mamh=0
+    if lop =="":
+        lop=0
+    if ca =="":
+        ca=0
+    
     cur = conn.cursor()
     cur.execute("SELECT sinhvien.MaSV, TenSV,DiemDanh FROM sinhvien, diemdanh WHERE diemdanh.MaSV=sinhvien.MaSV AND MaMH= "+str(mamh)+" AND MaGV ="+str(magv)+" AND Ca like '%"+str(ca)+"%' AND Ngay= '"+str(ngay)+"' AND MaLop = "+str(lop)+"")
     row = cur.fetchall()
+    conn.commit()
     return row
 
 def timkiem_diemdanh(magv,ngay,mamh,lop,ca,q):
     cur=conn.cursor()
     cur.execute("SELECT sinhvien.MaSV, TenSV,DiemDanh FROM sinhvien, diemdanh WHERE diemdanh.MaSV=sinhvien.MaSV AND MaMH= "+str(mamh)+" AND MaGV ="+str(magv)+" AND Ca like '%"+str(ca)+"%' AND Ngay= '"+str(ngay)+"' AND MaLop = "+str(lop)+" AND (sinhvien.MaSV like '%"+str(q)+"%' OR TenSV like '%"+str(q)+"%' OR DiemDanh like '%"+str(q)+"%')" ) 
     rows = cur.fetchall()
+    conn.commit()
     return rows
 
 def danhsachsinhvien(malop):
     cur=conn.cursor()
     cur.execute("SELECT ROW_NUMBER() OVER ( ORDER BY MaSV) AS STT , MaSV ,TenSV FROM sinhvien where MaLop = "+str(malop)+"" ) 
     rows = cur.fetchall()
+    conn.commit()
     return rows
 
 def xoasv(masv):
@@ -480,12 +520,14 @@ def anh(masv):
         if row == None:
             break
         a.append(row[0])
+    conn.commit()
     return a
 
 def timsv(malop,q):
     cur=conn.cursor()
     cur.execute("SELECT ROW_NUMBER() OVER ( ORDER BY MaSV) AS STT , MaSV ,TenSV FROM sinhvien where MaLop = "+str(malop)+" AND (MaSV like'%"+str(q)+"%' OR TenSV like'%"+str(q)+"%')" ) 
     rows = cur.fetchall()
+    conn.commit()
     return rows
 
 
@@ -538,6 +580,7 @@ def dong_masinhvien(malop):
         if row == None:
             break
         a.append(row[0])
+    conn.commit()
     return a
 
 def dong_tensinhvien(malop):
@@ -549,6 +592,7 @@ def dong_tensinhvien(malop):
         if row == None:
             break
         a.append(row[0])
+    conn.commit()
     return a
     
 
@@ -557,6 +601,22 @@ def nhap_excel_csdl(ma,ten,malop):
     cur = conn.cursor()
     cur.execute("INSERT INTO sinhvien(MaSV,TenSV,MaLop) VALUES ("+str(ma)+",'"+str(ten)+"', "+str(malop)+")")
     conn.commit()
+
+def Ngay_DD(makhoa):
+    cur = conn.cursor()
+    a=lop_theo_khoa(makhoa)
+    b=[]
+    for i in range(len(a)):
+        cur.execute("SELECT Ngay FROM diemdanh,lop WHERE diemdanh.MaLopp=lop.MaLop AND TenLop='"+str(a[i])+"'")
+        while True:
+            row = cur.fetchone()
+            if row == None:
+                break
+            b.append(row)
+    b=dict.fromkeys(b)
+    d=list(b)
+    conn.commit()
+    return d
   
 
 

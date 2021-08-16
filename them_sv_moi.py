@@ -27,6 +27,7 @@ import pandas as pd
 
 def main():
     def nhap_excel():
+        mlop=csdl.tenlop_thanh_ma(cb_lop.get())
         fln = filedialog.askopenfilename(initialdir=os.getcwd(),title="Mở file excel ",filetypes=(("XLSX file","*.xlsx"),("All file","*.*")))
         
         xl = pd.ExcelFile(fln)
@@ -36,12 +37,12 @@ def main():
         for i in range(df.shape[0]):
             masv=df['Mã sinh viên'][i]
             tensv=df['Tên sinh viên'][i]
-            csdl.nhap_excel_csdl(masv,tensv,malop)
+            csdl.nhap_excel_csdl(masv,tensv,mlop)
 
         update(row)
     def xuat_excel():
         malop=csdl.tenlop_thanh_ma(cb_lop.get())
-        
+        row =csdl.danhsachsinhvien(malop)
         if len(row)<1:
             messagebox.showwarning("thông báo","Không có dữ liệu xuất file excel !")
             return False

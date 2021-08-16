@@ -1,8 +1,6 @@
 from tkinter import *
-from tkinter import ttk
 from tkinter import filedialog
 from tkinter import PhotoImage
-from tkinter.ttk import Combobox
 from PIL import Image, ImageTk
 import os
 import shutil
@@ -19,7 +17,7 @@ import diemdanhsv
 import thongke
 import taikhoan
 import re
-import xlsxwriter
+
 
 
 

@@ -1,6 +1,6 @@
 from tkinter import *
 from tkcalendar import *
-from tkinter import ttk
+from tkinter import ttk, messagebox
 from tkinter import PhotoImage
 from PIL import ImageTk
 import csdl
@@ -22,32 +22,68 @@ def main():
     def getrow(event):
         rowid=tv.identify_row(event.y)
         item=tv.item(tv.focus())
+
+        data_ma.set(item['values'][1])
         data_magv.set(item['values'][1])
         data_ten.set(item['values'][2])
         data_email.set(item['values'][3])
 
     def khoiphuc():
         ndtimkiem.set("")
+        data_email.set("")
+        data_ma.set("")
+        data_magv.set("")
+        data_ten.set("")
         row=csdl_admin.banggv(makhoa)
         update(row)
+
     def timkiem():
         row=csdl_admin.timkiem_gv(makhoa,ndtimkiem.get())
         update(row)
+
+    def kt_dau_khoangcach(s):
+        return bool(s and s.strip())
+        
     def them():
-        csdl_admin.themgv(makhoa,data_email.get(),data_ten.get())
-        data_ten.set("")
-        data_email.set("")
-        khoiphuc()
+        ma=data_ma.get()
+        ten=data_ten.get()
+        emailgv=ma+"@teacher.mku.edu.vn"
+        if ma =="" or ten == "":
+            messagebox.showwarning("thông báo","Bạn hãy nhập đầy đủ dữ liệu")
+        elif len(ma) < 6 or ma.isnumeric()== False:
+            messagebox.showwarning("thông báo","Mã giảng viên phải ít nhất 6 kí tự và là số")
+        elif kt_dau_khoangcach(data_ten.get())==False :
+            messagebox.showwarning("thông báo","Dữ liệu tên giảng viên không hợp lệ")
+        elif csdl_admin.KT_ma_tontai(ma) == True:
+            csdl_admin.themgv(makhoa,ma,emailgv,data_ten.get())
+            messagebox.showinfo("thông báo","Đã thêm giảng viên vào danh sách")
+            khoiphuc()
+        
     def xoa():
-        csdl_admin.xoagv(data_magv.get(),data_email.get())
-        data_ten.set("")
-        data_email.set("")
-        khoiphuc()
+        if data_ma.get()=="" or data_ten.get()=="":
+            messagebox.showwarning("thông báo","Chưa có dữ liệu xoá. Bạn hãy click 2 lần vào dòng muốn xoá !")
+        elif messagebox.askyesno("thông báo","Bạn thực sự muốn xoá"):
+            if csdl_admin.kt_gv_tontai(data_ma.get()):
+                csdl_admin.xoagv(data_ma.get(),data_email.get())
+                khoiphuc()
+            else:
+                return
+
+
     def sua():
-        csdl_admin.suagv(data_magv.get(),data_ten.get())
-        data_ten.set("")
-        data_email.set("")
-        khoiphuc()
+        if data_ma.get() != data_magv.get():
+            messagebox.showwarning("thông báo","khổng thể sửa mã")
+            data_ma.set(data_magv.get())
+        elif data_magv.get()=="":
+            messagebox.showwarning("thông báo","Chưa có dữ liệu sửa. Bạn hãy click 2 lần vào dòng muốn sửa !")
+        elif data_ten.get()=="":
+            messagebox.showwarning("thông báo","Bạn hãy nhập đầy đủ dữ liệu")
+        elif kt_dau_khoangcach(data_ten.get())==False :
+            messagebox.showwarning("thông báo","Dữ liệu tên giảng viên không hợp lệ")
+        else:
+            csdl_admin.suagv(data_magv.get(),data_ten.get())
+            messagebox.showinfo("thông báo","Đã sửa thành công")
+            khoiphuc()
     def menuthongke():
         win.destroy()
         admin_thongke.main()
@@ -99,6 +135,7 @@ def main():
         d=file.read().split()
     email=d[0]
     makhoa=csdl.makhoa_tu_email(email)
+    data_ma=StringVar()
     data_ten=StringVar()
     data_email=StringVar()
     ndtimkiem=StringVar()
@@ -133,13 +170,15 @@ def main():
     btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,command=khoiphuc)
     btnkhoiphuc.place(x=920,y=292)
 
-    Entry(bg,font=("Baloo Tamma",11),width=36,textvariable=data_ten,bd=0,highlightthickness=0).place(x=575,y=80)
-    Entry(bg,font=("Baloo Tamma",11),width=36,textvariable=data_email,bd=0,highlightthickness=0).place(x=575,y=134)
+    Entry(bg,font=("Baloo Tamma",11),width=36,textvariable=data_ma,bd=0,highlightthickness=0).place(x=575,y=80)
+    Entry(bg,font=("Baloo Tamma",11),width=36,textvariable=data_ten,bd=0,highlightthickness=0).place(x=575,y=136)
     Entry(bg,font=("Baloo Tamma",11),width=28,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=652,y=294)
 
+   
     
     tengv=csdl.tim_tengv_tu_email()
     Label(bg,text=tengv,font=("Baloo Tamma",14),fg="#A672BB",bg="white").place(x=45,y=40)
+
 
     f=Frame(bg)
     f.place(x=320,y=30)

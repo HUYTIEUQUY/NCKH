@@ -21,25 +21,48 @@ def main():
         tv.delete(*tv.get_children())
         for i in row:
             tv.insert('','end',values=i)
+    def kt_dau_khoangcach(s):
+        return bool(s and s.strip())
     def them():
         ten=tenlop.get()
-        csdl_admin.themlop(makhoa,ten)
-        messagebox.showinfo("thông báo","Thêm '"+ten+"' thành công")
-        khoiphuc()
+        if ten=="":
+            messagebox.showwarning("thông báo","Hãy nhập dữ liệu đầy đủ")
+        elif kt_dau_khoangcach(ten)== False:
+            messagebox.showwarning("thông báo","Dữ liệu tên lớp không hợp lệ")
+        elif csdl_admin.KT_tenlop_tontai(ten)!=[]:
+            messagebox.showerror("thông báo",ten +" đã tồn tại")
+        else:
+            csdl_admin.themlop(makhoa,ten)
+            messagebox.showinfo("thông báo","Thêm '"+ten+"' thành công")
+            khoiphuc()
     def xoa():
         ten=tenlop.get()
-        if csdl_admin.kt_loptontai(malop.get()) == True:
-            csdl_admin.xoalop(malop.get())
-            messagebox.showinfo("thông báo","Xoá '"+ten+"' thành công")
-            khoiphuc()
+        if ten=="":
+            messagebox.showwarning("thông báo","Chưa có dữ liệu xoá. Bạn hãy click 2 lần vào dòng muốn xoá !")
+        elif messagebox.askyesno("thông báo","Bạn có thực sự muốn xoá"):
+            if csdl_admin.kt_loptontai(malop.get()) == True:
+                csdl_admin.xoalop(malop.get())
+                messagebox.showinfo("thông báo","Xoá '"+ten+"' thành công")
+                khoiphuc()
+            else:
+                messagebox.showerror("thông báo", "Xoá lớp thất bại")
         else:
-            messagebox.showerror("thông báo", "Xoá lớp thất bại")
+            return
     def sua():
         tenmoi=tenlop.get()
         malop1=malop.get()
-        csdl_admin.sua(malop1,tenmoi)
-        messagebox.showinfo("thông báo","Đã đổi tên lớp thành công")
-        khoiphuc()
+        if tenmoi=="":
+            messagebox.showwarning("thông báo","Chưa có dữ liệu cập nhật")
+        elif malop.get()=="":
+            messagebox.showwarning("thông báo","Chưa có dữ liệu cập nhật, Bạn hãy click 2 lần vào dòng cần cập nhật")
+        elif kt_dau_khoangcach(tenmoi)== False:
+            messagebox.showwarning("thông báo","Dữ liệu tên lớp không hợp lệ")
+        elif csdl_admin.KT_tenlop_tontai(tenmoi)!=[]:
+            messagebox.showerror("thông báo",tenmoi+" đã tồn tại")
+        else:
+            csdl_admin.sua(malop1,tenmoi)
+            messagebox.showinfo("thông báo","Đã đổi tên lớp thành công")
+            khoiphuc()
     def getrow(event):
         rowid=tv.identify_row(event.y)
         item=tv.item(tv.focus())
@@ -110,7 +133,7 @@ def main():
 
     menudangxuat=Button(bg,image=img_menudangxuat,bd=0,highlightthickness=0,command=menudangxuat)
     menudangxuat.place(x=248,y=44)
-    menulophoc=Button(bg,image=img_menulophoc,bd=0,highlightthickness=0)
+    menulophoc=Button(bg,image=img_menulophoc,bd=0,highlightthickness=0,compound=LEFT)
     menulophoc.place(x=30,y=128)
     menugiangvien=Button(bg,image=img_menugiangvien,bd=0,highlightthickness=0,command=menugiangvien)
     menugiangvien.place(x=30,y=212)

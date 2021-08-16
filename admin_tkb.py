@@ -3,16 +3,11 @@ from tkinter import ttk
 from tkinter import PhotoImage
 from tkinter.ttk import Combobox
 from PIL import ImageTk
-from mysql.connector import cursor
 import csdl
 import csdl_admin
 from tkinter import messagebox
 import dangnhap
 import socket
-import mysql.connector
-import pickle
-import cv2
-import face_recognition
 import admin_lop
 import admin_giangvien
 import admin_thongke
@@ -30,29 +25,44 @@ def main():
         rowid=tv.identify_row(event.y)
         item=tv.item(tv.focus())
         data_lop.set(item['values'][2])
+        data_lopsx.set(item['values'][2])
         data_matkb.set(item['values'][1])
     def timkiem():
         row=csdl_admin.timkiem_tkb(makhoa,ndtimkiem.get())
         update(row)
     def khoiphuc():
+        data_lop.set("")
+        data_lopsx.set("")
+        data_matkb.set("")
         ndtimkiem.set("")
         row=csdl_admin.bangtkb(makhoa)
         update(row)
     def them():
-        malop=csdl.tenlop_thanh_ma(data_lop.get())
-        ngaylap=csdl.ngay()
-        csdl_admin.themtkb(malop,ngaylap)
-        khoiphuc()
+        if data_lop=="":
+            messagebox.showwarning("thông báo","Bạn chưa có dữ liệu hãy chọn lớp để tạo thời khoá biểu")
+        else:
+            malop=csdl.tenlop_thanh_ma(data_lop.get())
+            ngaylap=csdl.ngay()
+            csdl_admin.themtkb(malop,ngaylap)
+            khoiphuc()
     def sua():
-        malop=csdl.tenlop_thanh_ma(data_lop.get())
-        csdl_admin.suatkb(data_matkb.get(),malop)
-        khoiphuc()
+        if data_matkb.get()=="":
+            messagebox.showwarning("thông báo","Bạn chưa có dữ liệu , Hãy nhấn 2 lần vào dòng bạn muốn sửa, chọn lại lớp và nhấn nút 'Sửa'")
+        else:
+            malop=csdl.tenlop_thanh_ma(data_lop.get())
+            csdl_admin.suatkb(data_matkb.get(),malop)
+            khoiphuc()
     def xem():
-        malop=csdl.tenlop_thanh_ma(data_lop.get())
-        win.destroy()
-        admin_chitiettkb.main(data_matkb.get(),malop)
+        if data_matkb.get()=="":
+            messagebox.showwarning("thông báo","Bạn chưa có dữ liệu , Hãy nhấn 2 lần vào dòng bạn muốn xem và nhấn nút 'xem' ")
+        else:
+            malop=csdl.tenlop_thanh_ma(data_lopsx.get())
+            win.destroy()
+            admin_chitiettkb.main(data_matkb.get(),malop)
     def xoa():
-        if(csdl_admin.kt_chitiettkb(data_matkb.get())!=[]):
+        if data_matkb.get()=="":
+            messagebox.showwarning("thông báo","Bạn chưa có dữ liệu , Hãy nhấn 2 lần vào dòng bạn muốn xoá và nhấn nút 'xoá' ")
+        elif(csdl_admin.kt_chitiettkb(data_matkb.get())!=[]):
             messagebox.showerror("thông báo","Chi tiết thời khoá biểu vẫn đang tồn tại, Không xoá được")
         else:
             csdl_admin.xoatkb(data_matkb.get())
@@ -109,6 +119,7 @@ def main():
     tenkhoa=csdl.tenkhoatuma(makhoa)
     lop=csdl.lop_theo_khoa(makhoa)
     data_lop=StringVar()
+    data_lopsx=StringVar()
     ndtimkiem=StringVar()
     data_matkb=StringVar()
 #-------------------------------------------------------------------------------
@@ -147,7 +158,7 @@ def main():
     tengv=csdl.tim_tengv_tu_email()
     Label(bg,text=tengv,font=("Baloo Tamma",14),fg="#A672BB",bg="white").place(x=45,y=40)
 
-    Label(bg,text=tenkhoa,font=("Baloo Tamma",11),bg="white").place(x=570,y=77)
+    Label(bg,text=tenkhoa,font=("Baloo Tamma",12),bg="white").place(x=570,y=77)
     
     cb_lop=Combobox(bg,textvariable=data_lop,font=("Baloo Tamma",12),values=lop,width=30)
     cb_lop.current(0)
