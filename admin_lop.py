@@ -10,7 +10,7 @@ import dangnhap
 import socket
 import admin_giangvien
 import admin_thongke
-import admin_tkb
+import admin_chitiettkb
 import admin_monhoc
 
 
@@ -81,7 +81,7 @@ def main():
         admin_thongke.main()
     def menutkb():
         win.destroy()
-        admin_tkb.main()
+        admin_chitiettkb.main()
     def menugiangvien():
         win.destroy()
         admin_giangvien.main()
@@ -151,21 +151,21 @@ def main():
     btnxoa=Button(bg,image=img_btnxoa,bd=0,highlightthickness=0,command=xoa)
     btnxoa.place(x=770,y=181)
     btntimkiem=Button(bg,image=img_btntimkiem,bd=0,highlightthickness=0,command=timkiem)
-    btntimkiem.place(x=881,y=250)
+    btntimkiem.place(x=881,y=292)
     btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,command=khoiphuc,bg="white")
-    btnkhoiphuc.place(x=920,y=250)
+    btnkhoiphuc.place(x=920,y=292)
 
  
     tengv=csdl.tim_tengv_tu_email()
     Label(bg,text=tengv,font=("Baloo Tamma",14),fg="#A672BB",bg="white").place(x=45,y=40)
 
     tenkhoa=csdl.tenkhoatuma(makhoa)
-    Label(bg,text=tenkhoa,font=("Baloo Tamma",11),fg="black",bg="white").place(x=549,y=69)
+    Label(bg,text=tenkhoa,font=("Baloo Tamma",11),fg="black",bg="white").place(x=578,y=90)
     
     
-    Entry(bg,font=("Baloo Tamma",11),width=37,textvariable=tenlop,bd=0,highlightthickness=0).place(x=549,y=115)
+    Entry(bg,font=("Baloo Tamma",11),width=37,textvariable=tenlop,bd=0,highlightthickness=0).place(x=576,y=129)
     
-    Entry(bg,font=("Baloo Tamma",11),width=27,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=656,y=251)
+    Entry(bg,font=("Baloo Tamma",11),width=27,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=656,y=292)
 
     tv = ttk.Treeview(bg, columns=(1,2,3), show="headings")
     tv.column(1, width=120,anchor=CENTER)
@@ -175,7 +175,7 @@ def main():
     tv.heading(1,text="Số thứ tự")
     tv.heading(2,text="Mã Lớp")
     tv.heading(3,text="Tên Lớp")
-    tv.place(x=390,y=320)
+    tv.place(x=390,y=340)
     tv.bind('<Double 1>', getrow)
     row=csdl_admin.banglop(makhoa)
     update(row)

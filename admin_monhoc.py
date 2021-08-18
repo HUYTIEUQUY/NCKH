@@ -11,7 +11,7 @@ import string
 import admin_lop
 import admin_giangvien
 import admin_thongke
-import admin_tkb
+import admin_chitiettkb
 import string
 
 
@@ -20,35 +20,44 @@ def main():
         ndtimkiem.set("")
         data_mamon.set("")
         data_tenmon.set("")
+        data_sotietlt.set("")
+        data_sotietth.set("")
         row=csdl_admin.bangmon(makhoa)
         update(row)
+
     def update(row):
         tv.delete(*tv.get_children())
         for i in row:
             tv.insert('','end',values=i)
+
     def getrow(event):
         rowid=tv.identify_row(event.y)
         item=tv.item(tv.focus())
         data_tenmon.set(item['values'][2])
         data_mamon.set(item['values'][1])
         data_mamonsx.set(item['values'][1])
+        data_sotietlt.set(item['values'][3])
+        data_sotietth.set(item['values'][4])
 
     def kt_dau_khoangcach(s):
         return bool(s and s.strip())
 
-    def kt_nhap(ma,ten):
-        if ma=="" or ten=="" :
+    def kt_nhap(ma,ten,lt,th):
+        if ma=="" or ten=="" or lt=="" or th=="" :
             messagebox.showwarning("thông báo","Hãy nhập đầy đủ dữ liệu")
         elif len(str(ma)) <6 or ma.isnumeric()== False :
             messagebox.showerror("thông báo","Mã môn học phải ít nhất 6 kí tự và là số")
             return False
-        elif kt_dau_khoangcach(ten)==False :
+        
+        elif kt_dau_khoangcach(ten)==False:
             messagebox.showwarning("thông báo","Dữ liệu tên môn học không hợp lệ")
             return False
+        elif lt.isnumeric()== False or th.isnumeric()== False:
+            messagebox.showwarning("thông báo","Dữ liệu không hợp lệ")
         elif csdl_admin.kt_ma_mh(ma) !=[]:
             messagebox.showerror("thông báo","Mã môn học đã tồn tại")
             return False
-        elif csdl_admin.kt_ten_mh(ten) !=[]:
+        elif csdl_admin.kt_ten_mh(ten) != None:
             messagebox.showerror("thông báo","Môn học này đã tồn tại")
             return False
         else:
@@ -57,36 +66,48 @@ def main():
     def them():
         ten=data_tenmon.get()
         ma=data_mamon.get()
-        if kt_nhap(ma,ten) == True:
-            csdl_admin.themmon(ma,makhoa,ten)
+        lt=data_sotietlt.get()
+        th=data_sotietth.get()
+        if kt_nhap(ma,ten,lt,th) == True:
+            csdl_admin.themmon(ma,makhoa,ten,lt,th)
             messagebox.showinfo("thông báo","Thêm '"+ten+"' thành công")
             khoiphuc()
     def xoa():
         ma=data_mamon.get()
-        if messagebox.askyesno("thông báo","Bạn có thực sự muốn xoá"):
+
+        if data_mamonsx.get()== "":
+            messagebox.showwarning("thông báo","Chưa có dữ liệu để xoá\nHãy nhấn 2 lần vào dòng dữ liệu muốn xoá và nhấn nút 'xoá'")
+        elif messagebox.askyesno("thông báo","Bạn có thực sự muốn xoá"):
             csdl_admin.xoamon(ma)
             khoiphuc()
         else: 
             return True
+
     def sua():
         ma=data_mamon.get()
         ten=data_tenmon.get()
+        lt=data_sotietlt.get()
+        th=data_sotietth.get()
         ten=str(ten).replace("  "," ")
         if data_mamonsx.get() == "" :
             messagebox.showerror("thông báo","Bạn chưa có dữ liệu sửa. Hãy nhấn 2 lần vào dòng muốn sửa, thay đổi tên và nhấn nút 'sửa'")
         elif ma!=data_mamonsx.get():
             messagebox.showwarning("thông báo","Bạn không thể sửa mã môn học")
             data_mamon.set(data_mamonsx.get())
-        elif ten=="" :
+        elif ten=="" or lt=="" or th=="" :
             messagebox.showwarning("thông báo","Hãy nhập đầy đủ dữ liệu")
         elif kt_dau_khoangcach(ten)==False :
             messagebox.showwarning("thông báo","Dữ liệu tên môn học không hợp lệ")
-        elif csdl_admin.kt_ten_mh(ten) !=[]:
+        elif lt.isnumeric()== False or th.isnumeric()== False:
+            messagebox.showwarning("thông báo","Dữ liệu không hợp lệ")
+        elif csdl_admin.kt_ten_mh(ten) != None and csdl_admin.kt_ten_mh(ten) != ma :
             messagebox.showerror("thông báo","Môn học này đã tồn tại")
         else:
-            
-            csdl_admin.suamon(ma,ten)
+            csdl_admin.suamon(ma,ten,lt,th)
             khoiphuc()
+            messagebox.showinfo("thông báo","Sửa thành công")
+
+
     def timkiem():
         row=csdl_admin.timmon(makhoa,ndtimkiem.get())
         update(row)
@@ -98,7 +119,7 @@ def main():
         main()
     def menutkb():
         win.destroy()
-        admin_tkb.main()
+        admin_chitiettkb.main()
     def menulop():
         win.destroy()
         admin_lop.main()
@@ -141,6 +162,8 @@ def main():
     makhoa=csdl.makhoa_tu_email(email)
     data_tenmon=StringVar()
     data_mamon=StringVar()
+    data_sotietlt=StringVar()
+    data_sotietth=StringVar()
     data_mamonsx=StringVar()
     ndtimkiem=StringVar()
 
@@ -169,9 +192,9 @@ def main():
     btnxoa=Button(bg,image=img_btnxoa,bd=0,highlightthickness=0,command=xoa)
     btnxoa.place(x=770,y=230)
     btntimkiem=Button(bg,image=img_btntimkiem,bd=0,highlightthickness=0,command=timkiem)
-    btntimkiem.place(x=881,y=292)
+    btntimkiem.place(x=881,y=315)
     btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,command=khoiphuc)
-    btnkhoiphuc.place(x=920,y=292)
+    btnkhoiphuc.place(x=920,y=315)
 
  
     tengv=csdl.tim_tengv_tu_email()
@@ -179,19 +202,25 @@ def main():
 
     tenkhoa=csdl.tenkhoatuma(makhoa)
     
-    Entry(bg,font=("Baloo Tamma",11),width=35,fg="black",bg="white",textvariable=data_mamon,bd=0,highlightthickness=0).place(x=615,y=82)
+    Entry(bg,font=("Baloo Tamma",11),width=35,fg="black",bg="white",textvariable=data_mamon,bd=0,highlightthickness=0).place(x=590,y=72)
 
-    Entry(bg,font=("Baloo Tamma",11),width=35,textvariable=data_tenmon,bd=0,highlightthickness=0).place(x=615,y=145)
-    Entry(bg,font=("Baloo Tamma",11),width=28,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=652,y=294)
+    Entry(bg,font=("Baloo Tamma",11),width=35,textvariable=data_tenmon,bd=0,highlightthickness=0).place(x=590,y=107)
+    Entry(bg,font=("Baloo Tamma",11),width=35,textvariable=data_sotietlt,bd=0,highlightthickness=0).place(x=590,y=142)
+    Entry(bg,font=("Baloo Tamma",11),width=35,textvariable=data_sotietth,bd=0,highlightthickness=0).place(x=590,y=177)
+    Entry(bg,font=("Baloo Tamma",11),width=28,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=652,y=315)
 
-    tv = ttk.Treeview(bg, columns=(1,2,3), show="headings")
+    tv = ttk.Treeview(bg, columns=(1,2,3,4,5), show="headings")
     tv.column(1, width=50,anchor=CENTER)
     tv.column(2, width=80,anchor=CENTER)
     tv.column(3, width=240)
+    tv.column(4, width=100,anchor=CENTER)
+    tv.column(5, width=100,anchor=CENTER)
 
     tv.heading(1,text="STT")
     tv.heading(2,text="Mã môn")
     tv.heading(3,text="Tên môn")
+    tv.heading(4,text="Số tiết lý thuyết")
+    tv.heading(5,text="Số tiết thực hành")
     tv.place(x=368,y=350)
 
     tv.bind('<Double 1>', getrow)

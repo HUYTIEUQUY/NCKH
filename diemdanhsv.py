@@ -254,7 +254,7 @@ def main():
     else:
         data_lop = csdl.hien_lop_theo_tkb(ma_gv,ca)
     #lớp
-    Label(bg,text=data_lop,font=("Baloo Tamma",12),bg="white").place(x=530,y=120)
+    Label(bg,text=data_lop,font=("Baloo Tamma",12),bg="white").place(x=600,y=90)
     
     #dieduf kiện hiện môn
     if csdl.hien_mon_theo_tkb(ma_gv,ca) == []:
@@ -262,7 +262,7 @@ def main():
     else:
         data_mon=csdl.hien_mon_theo_tkb(ma_gv,ca)
         #môn
-    Label(bg,text=data_mon,font=("Baloo Tamma",12),bg="white").place(x=530,y=180)
+    Label(bg,text=data_mon,font=("Baloo Tamma",12),bg="white").place(x=600,y=125)
 
     #nút điểm diemdanh
     btndiemdanh=Button(bg,image=ing_btndiemdanh,bd=0,highlightthickness=0,command=kt)
@@ -276,17 +276,23 @@ def main():
         row=csdl.bangdiemdanh(malop,mamh,ca,ngay)
     except:
         row=[]
-    columns=['Họ và tên','điểm danh']
-    tv = ttk.Treeview(bg, columns=columns, show="headings")
-    tv.column('điểm danh', anchor=CENTER)
-        
-    tv.place(x=460,y=330)
+   
+   
+    tv = ttk.Treeview(bg, columns=(1,2,3,4,5), show="headings")
+    tv.column(1, width=180 )
+    tv.column(2, width=80,anchor=CENTER)
+    tv.column(3, width=80,anchor=CENTER)
+    tv.column(4, width=80,anchor=CENTER)
+    tv.column(5, width=180)
+    tv.heading(1,text="Sinh viên")
+    tv.heading(2,text="Thông tin")
+    tv.heading(3,text="Thời gian vào")
+    tv.heading(4,text="Thời gian ra")
+    tv.heading(5,text="Ghi chú")
+
+    tv.place(x=380,y=350)
     
-    Frame(bg,width=420,bg='white').place(x=460,y=330)
-    Frame(bg,width=420,bg='white').place(x=460,y=556)
-    Frame(bg,width=3,height=250,bg='white').place(x=460,y=330)
-    Frame(bg,width=3,height=250,bg='white').place(x=860,y=330)
-    Frame(bg,width=3,height=225,bg='#A672BB').place(x=660,y=350)
+    
     update(row)
 
     #nút  diemdanhlai

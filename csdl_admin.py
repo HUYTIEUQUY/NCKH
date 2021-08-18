@@ -1,6 +1,7 @@
 import mysql.connector
 from tkinter import messagebox
 from csdl import lop_theo_khoa
+import hashlib
 
 conn = mysql.connector.connect(
   host="localhost",
@@ -93,16 +94,16 @@ def ma_lop_thanh_ten(ma):
 
 
 #============================================================================================================================
-def DS_tkb(matkb):
+def DS_tkb(malop,namhoc,hki):
     cur=conn.cursor()
-    cur.execute("SELECT ROW_NUMBER() OVER ( ORDER BY Ngay) AS STT,Ngay, TenMH,TenGV,Ca FROM chitiettkb, monhoc, giangvien WHERE chitiettkb.MaMH=monhoc.MaMH AND giangvien.MaGV = chitiettkb.MaGV AND MaTKB ="+str(matkb)+" ORDER BY Ngay" )
+    cur.execute("Select Ngay, TenMH,PP_giang,TenGV,Ca FROM chitiettkb, monhoc, giangvien, lop WHERE chitiettkb.MaLop=lop.MaLop AND chitiettkb.MaMH=monhoc.MaMH AND giangvien.MaGV = chitiettkb.MaGV AND lop.MaLop ='"+str(malop)+"' AND MaNH="+str(namhoc)+" AND HocKy='"+str(hki)+"' ORDER BY Ngay" )
     rows = cur.fetchall()
     conn.commit()
     return rows
 
-def timkiem_dongtkb(matkb, q):
+def timkiem_dongtkb(malop, q,namhoc,hki):
   cur=conn.cursor()
-  cur.execute("SELECT ROW_NUMBER() OVER ( ORDER BY Ngay) AS STT, Ngay,TenMH, TenGV,Ca FROM chitiettkb, monhoc, giangvien WHERE chitiettkb.MaMH=monhoc.MaMH AND giangvien.MaGV = chitiettkb.MaGV AND MaTKB ="+str(matkb)+" AND (TenMH like '%"+str(q)+"%' OR  TenGV like '%"+str(q)+"%' OR Ngay like '%"+str(q)+"%' OR Ca like '%"+str(q)+"%')")
+  cur.execute("Select Ngay, TenMH,PP_giang,TenGV,Ca FROM chitiettkb, monhoc, giangvien, lop WHERE chitiettkb.MaLop=lop.MaLop AND chitiettkb.MaMH=monhoc.MaMH AND giangvien.MaGV = chitiettkb.MaGV AND lop.MaLop ='"+str(malop)+"' AND MaNH="+str(namhoc)+" AND HocKy='"+str(hki)+"' AND (TenMH like '%"+str(q)+"%' OR  TenGV like '%"+str(q)+"%' OR Ngay like '%"+str(q)+"%' OR Ca like '%"+str(q)+"%' OR PP_giang like '%"+str(q)+"%') ")
   rows = cur.fetchall()
   conn.commit()
   return rows
@@ -113,11 +114,23 @@ def xoa_dong_tkb(ngay,monhoc,gv,ca):
   cur.execute("DELETE FROM chitiettkb WHERE Ngay like '"+str(ngay)+"' AND MaMH = "+str(monhoc)+" AND MaGV="+str(gv)+" AND Ca ='"+str(ca)+"'")
   conn.commit()
 
+def ma_namhoc(ten):
+    cur = conn.cursor()
+    cur.execute("SELECT MaNH FROM namhoc where TenNH like '"+str(ten)+"'")
+    while True:
+        row = cur.fetchone()
+        
+        if row == None:
+            break
+            
+        a=row[0]
+    conn.commit()
+    return a
 
-def them_tkb(matkb,mgv,mlop,mmh,ngay,ca):
+def them_tkb(mgv,mlop,mmh,ngay,ca,namhoc,hki,ppgiang):
   cur = conn.cursor()
-  query=("INSERT INTO chitiettkb(MaTKB, MaGV, MaMH, MaLop, Ngay, Ca) VALUES (%s,%s,%s,%s,%s,%s)")
-  cur.execute(query,(matkb,mgv,mmh,mlop,ngay,ca))
+  query=("INSERT INTO chitiettkb( MaGV, MaMH, MaLop, Ngay, Ca,MaNH,HocKy,PP_giang) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)")
+  cur.execute(query,(mgv,mmh,mlop,ngay,ca,namhoc,hki,ppgiang))
   conn.commit()
 
 
@@ -157,7 +170,7 @@ def KT_lich_tkb(ngay, malop,ca):
 
 #=============================================================================================================================
 def banggv(makhoa):
-    cur.execute("SELECT ROW_NUMBER() OVER ( ORDER BY MaGV) AS STT , MaGV ,TenGV,giangvien.Email FROM giangvien,dangnhap where dangnhap.Email=giangvien.Email AND MaKhoa = "+str(makhoa)+" AND LoaiTK='user'") 
+    cur.execute("SELECT ROW_NUMBER() OVER ( ORDER BY MaGV) AS STT , giangvien.MaGV ,TenGV,Email,SDT, GhiChu FROM giangvien,dangnhap where dangnhap.MaGV=giangvien.MaGV AND MaKhoa = "+str(makhoa)+" AND LoaiTK='user'") 
     rows = cur.fetchall()
     conn.commit()
     return rows
@@ -166,9 +179,11 @@ def timkiem_gv(makhoa,q):
     rows = cur.fetchall()
     conn.commit()
     return rows
-def themdangnhap(email):
-    matkhau="123456"
-    cur.execute("INSERT INTO dangnhap(Email,MatKhau) VALUES ('"+str(email)+"','"+str(matkhau)+"')" ) 
+def themdangnhap(magv):
+    
+    hash_object = hashlib.md5(b'+magv+')
+    matkhau=hash_object.hexdigest()
+    cur.execute("INSERT INTO dangnhap(MaGV,MatKhau) VALUES ('"+str(magv)+"','"+str(matkhau)+"')" ) 
     conn.commit()
 
 def KT_ma_tontai(ma):
@@ -187,9 +202,9 @@ def KT_ma_tontai(ma):
         return True
     conn.commit()
 
-def themgv(makhoa,magv,email,tengv):
-    themdangnhap(email)
-    cur.execute("INSERT INTO giangvien(MaGV,TenGV,MaKhoa,Email) VALUES ('"+str(magv)+"','"+str(tengv)+"' , "+str(makhoa)+", '"+str(email)+"')" )
+def themgv(makhoa,magv,email,tengv,sdt,ghichu):
+    cur.execute("INSERT INTO giangvien(MaGV,TenGV,MaKhoa,Email,SDT,GhiChu) VALUES ('"+str(magv)+"','"+str(tengv)+"' , "+str(makhoa)+", '"+str(email)+"','"+str(sdt)+"','"+str(ghichu)+"')" )
+    themdangnhap(magv)
     conn.commit()
 
 def xoatk(email):
@@ -223,8 +238,8 @@ def kt_gv_tontai(magv):
         return True
 
     
-def suagv(magv,tengv):
-    cur.execute("UPDATE giangvien SET TenGV='"+str(tengv)+"' WHERE MaGV = "+str(magv)+"" ) 
+def suagv(magv,tengv,sdt,ghichu):
+    cur.execute("UPDATE giangvien SET TenGV='"+str(tengv)+"' , SDT = '"+str(sdt)+"', GhiChu = '"+str(ghichu)+"' WHERE MaGV = "+str(magv)+"" ) 
     conn.commit()
 
 def bangtkb(makhoa):
@@ -256,26 +271,27 @@ def suatkb(matkb,malop):
     #------------------------------BẢNG MÔN HỌC ----------------------------------------------------
 
 def bangmon(makhoa):
-    cur.execute("SELECT ROW_NUMBER() OVER ( ORDER BY MaMH) AS STT , MaMH ,TenMH FROM monhoc where MaKhoa = "+str(makhoa)+"" ) 
+    cur.execute("SELECT ROW_NUMBER() OVER ( ORDER BY MaMH) AS STT , MaMH ,TenMH,SoTietLT,SoTietTH FROM monhoc where MaKhoa = "+str(makhoa)+"" ) 
     rows = cur.fetchall()
     conn.commit()
     return rows
 
 def timmon(makhoa,q):
-    cur.execute("SELECT ROW_NUMBER() OVER ( ORDER BY MaMH) AS STT , MaMH ,TenMH FROM monhoc where MaKhoa = "+str(makhoa)+" AND (MaMH like'%"+str(q)+"%' OR TenMH like'%"+str(q)+"%')" ) 
+    cur.execute("SELECT ROW_NUMBER() OVER ( ORDER BY MaMH) AS STT , MaMH ,TenMH, SoTietLT,SoTietTH FROM monhoc where MaKhoa = "+str(makhoa)+" AND (MaMH like'%"+str(q)+"%' OR TenMH like'%"+str(q)+"%' OR SoTietLT like '%"+str(q)+"%' OR SoTietTH like '%"+str(q)+"%')" ) 
     rows = cur.fetchall()
     conn.commit()
     return rows
 
-def themmon(mamh,makhoa,tenmon):
-    cur.execute("INSERT INTO monhoc(MaMH,TenMH, MaKhoa) VALUES ('"+str(mamh)+"','"+str(tenmon)+"',"+str(makhoa)+")" ) 
+def themmon(mamh,makhoa,tenmon,lt,th):
+    cur.execute("INSERT INTO monhoc(MaMH,TenMH, MaKhoa,SoTietLT,SoTietTH) VALUES ('"+str(mamh)+"','"+str(tenmon)+"',"+str(makhoa)+","+str(lt)+","+str(th)+")" ) 
     conn.commit()
+
 def xoamon(mamh):
     cur.execute("DELETE FROM monhoc WHERE MaMH='"+str(mamh)+"'" ) 
     conn.commit()
 
-def suamon(mamon,tenmon):
-    cur.execute("UPDATE monhoc SET TenMH='"+str(tenmon)+"' WHERE MaMH="+str(mamon)+"" ) 
+def suamon(mamon,tenmon,lt,th):
+    cur.execute("UPDATE monhoc SET TenMH='"+str(tenmon)+"' , SoTietLT="+str(lt)+" , SoTietTH="+str(th)+" WHERE MaMH="+str(mamon)+"" ) 
     conn.commit()
 
 def kt_ma_mh(mamh):
@@ -285,10 +301,20 @@ def kt_ma_mh(mamh):
     return row
 
 def kt_ten_mh(tenmh):
-    cur.execute("SELECT MaMH FROM monhoc where TenMH like'%"+str(tenmh)+"%' ")
-    row = cur.fetchall()
+    cur.execute("SELECT MaMH FROM monhoc where TenMH like '"+str(tenmh)+"' ")
+    a=None
+    try:
+        while True:
+            row = cur.fetchone()
+            if row == None:
+                break
+            a=row[0]
+    except:
+        a=None
     conn.commit()
-    return row
+    return a
+
+print(kt_ten_mh("lập trình game"))
 
 #---------------------------------------------------------------------------------------------------------
 
@@ -307,3 +333,16 @@ def Ngay_DD(makhoa):
     d=list(b)
     conn.commit()
     return d
+
+
+#------------------------------năm học
+def namhoc():
+    cur.execute("SELECT TenNH FROM namhoc")
+    a=[]
+    while True:
+        row = cur.fetchone()
+        if row == None:
+            break
+        a.append(row[0])
+    conn.commit()
+    return a

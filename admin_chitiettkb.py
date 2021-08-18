@@ -14,15 +14,22 @@ import admin_lop
 import admin_giangvien
 import admin_thongke
 import admin_monhoc
-import admin_tkb
 
 
 
-def main(matkb,malop):
+
+def main():
     def update(row):
         tv.delete(*tv.get_children())
         for i in row:
             tv.insert('','end',values=i)
+
+    def capnhatbang(event):
+        malop=csdl.tenlop_thanh_ma(data_lop.get())
+        namhoc=csdl_admin.ma_namhoc(data_namhoc.get())
+        row=csdl_admin.DS_tkb(malop,namhoc,data_hocky.get())
+        update(row)
+
     def getrow(event):
         rowid=tv.identify_row(event.y)
         item=tv.item(tv.focus())
@@ -45,8 +52,12 @@ def main(matkb,malop):
                 ca[i].set(0)
 
     def timkiem():
-        row=csdl_admin.timkiem_dongtkb(matkb,ndtimkiem.get())
+        malop=csdl.tenlop_thanh_ma(data_lop.get())
+        namhoc=csdl_admin.ma_namhoc(data_namhoc.get())
+        
+        row=csdl_admin.timkiem_dongtkb(malop,ndtimkiem.get(),namhoc,data_hocky.get())
         update(row)
+
     def khoiphuc():
         ngaycu.set("")
         moncu.set("")
@@ -59,12 +70,18 @@ def main(matkb,malop):
         data_ngay.set("")
         for i in range(5):
             ca[i].set(0)
-        row=csdl_admin.DS_tkb(matkb)
+        malop=csdl.tenlop_thanh_ma(data_lop.get())
+        namhoc=csdl_admin.ma_namhoc(data_namhoc.get())
+        row=csdl_admin.DS_tkb(malop,namhoc,data_hocky.get())
         update(row)
     def them():
+        malop=csdl.tenlop_thanh_ma(data_lop.get())
         magv=csdl.tengv_thanh_ma(data_gv.get())
         mamh = csdl.tenmon_thanh_ma(data_mon.get())
         ngay=data_ngay.get()
+        namhoc=csdl_admin.ma_namhoc(data_namhoc.get())
+        hki=data_hocky.get()
+        pp=data_loai.get()
         data_ca=""
         for i in range(len(ca)):
             if ca[i].get() >= 1:
@@ -75,7 +92,6 @@ def main(matkb,malop):
         else:
             ca1=ca2=data_ca
 
-
         if data_ca=="" or magv=="" or mamh=="" or ngay =="":
             messagebox.showerror("thông báo","Hãy chọn đầy đủ dữ liệu")
         elif(csdl_admin.KT_lichgiang(ngay,magv,ca1)!= None and csdl_admin.KT_lichgiang(ngay,magv,ca2)!= None):
@@ -83,7 +99,7 @@ def main(matkb,malop):
         elif(csdl_admin.KT_lich_tkb(ngay,malop,data_ca)!= None):
             messagebox.showerror("thông báo","Lớp đã có lịch học !")
         else:
-            csdl_admin.them_tkb(matkb,magv,malop,mamh,ngay,data_ca)
+            csdl_admin.them_tkb(magv,malop,mamh,ngay,data_ca,namhoc,hki,pp)
             messagebox.showinfo("thông báo", "Đã thêm 1 dòng vào thời khoá biểu ")
             khoiphuc()
             
@@ -95,6 +111,7 @@ def main(matkb,malop):
         ca_cu=cacu.get()
         # 
         #du liệu cập nhật
+        malop=csdl.tenlop_thanh_ma(data_lop.get())
         magv=csdl.tengv_thanh_ma(data_gv.get())
         mamh = csdl.tenmon_thanh_ma(data_mon.get())
         ngay=data_ngay.get()
@@ -120,7 +137,7 @@ def main(matkb,malop):
             messagebox.showerror("thông báo","Lớp đã có lịch học !")
         else:
             csdl_admin.xoa_dong_tkb(ngay_cu,mon_cu,gv_cu,ca_cu)
-            csdl_admin.them_tkb(matkb,magv,malop,mamh,ngay,data_ca)
+            csdl_admin.them_tkb(data_matkb,magv,malop,mamh,ngay,data_ca)
             messagebox.showinfo("thông báo", "Đã thêm 1 dòng vào thời khoá biểu ")
             khoiphuc()
                
@@ -170,9 +187,7 @@ def main(matkb,malop):
         btn=Button(f,image=img_btnchon,bg="white",command=lambda:chonngay(cal,btn),bd=0,highlightthickness=0)
         btn.pack()
         btnchonlich.config(command=tam)
-    def trolai():
-        win.destroy()
-        admin_tkb.main()
+   
 
     def tam():
         return
@@ -208,12 +223,20 @@ def main(matkb,malop):
     email=d[0]
     makhoa=csdl.makhoa_tu_email(email)
     
-    tenlop=csdl_admin.ma_lop_thanh_ten(malop)
+   
+    data_lop=StringVar()
+    
+
     data_gv=StringVar()
     data_mon=StringVar()
     data_ngay=StringVar()
+    data_namhoc=StringVar()
+    data_hocky=StringVar()
     data_ngay.set("")
     data_ca=StringVar()
+    data_matkb=StringVar()
+
+    lop=csdl.lop_theo_khoa(makhoa)
     gv=csdl.tim_gv_trong_khoa(makhoa)
     mon=csdl.mon_theo_khoa(makhoa)
     ndtimkiem=StringVar()
@@ -221,6 +244,10 @@ def main(matkb,malop):
     cacu=StringVar()
     moncu=StringVar()
     gvcu=StringVar()
+    data_loai=StringVar()
+    hocky=[1,2]
+    loai=["lý thuyết","thực hành"]
+    namhoc=csdl_admin.namhoc()
 
 #-------------------------------------------------------------------------------
     bg=Canvas(win,width=1000,height=600,bg="green")
@@ -247,33 +274,50 @@ def main(matkb,malop):
     btnxoa=Button(bg,image=img_btnxoa,bd=0,highlightthickness=0,command=xoa)
     btnxoa.place(x=770,y=247)
     btntimkiem=Button(bg,image=img_btntimkiem,bd=0,highlightthickness=0,command=timkiem)
-    btntimkiem.place(x=881,y=292)
+    btntimkiem.place(x=881,y=313)
     btnkhoiphuc=Button(bg,image=img_btnkhoiphuc,bd=0,highlightthickness=0,command=khoiphuc)
-    btnkhoiphuc.place(x=920,y=292)
+    btnkhoiphuc.place(x=920,y=313)
 
     btnchonlich=Button(bg,image=img_btnchonlich,bd=0,highlightthickness=0,command=chonlich)
-    btnchonlich.place(x=858,y=165)
-    btntrolai=Button(bg,image=img_btntrolai,bd=0,highlightthickness=0,command=trolai)
-    btntrolai.place(x=950,y=2)
-    
+    btnchonlich.place(x=858,y=155)    
     
  
     tengv=csdl.tim_tengv_tu_email()
     Label(bg,text=tengv,font=("Baloo Tamma",14),fg="#A672BB",bg="white").place(x=45,y=40)
 
-    Label(bg,text=tenlop,font=("Baloo Tamma",11),bg="white").place(x=616,y=40)
-    Label(bg,text="",font=("Baloo Tamma",11),bg="white",textvariable=data_ngay).place(x=616,y=165)
-    cbgv =Combobox(bg,textvariable=data_gv,font=("Times new roman",11), width=35,values=gv)
-    cbgv.place(x=614,y=80)
-    Frame(bg,width=270,height=2,bg="white").place(x=614,y=80)
-    Frame(bg,width=3,height=25,bg="white").place(x=614,y=80)
-    Frame(bg,width=270,height=2,bg="white").place(x=614,y=102)
+    cbnam =Combobox(bg,textvariable=data_namhoc,font=("Times new roman",12), width=20,values=namhoc)
+    cbnam.current(0)
+    cbnam.bind('<<ComboboxSelected>>', capnhatbang)
+    cbnam.place(x=552,y=20)
 
-    cbmon =Combobox(bg,textvariable=data_mon,font=("Times new roman",11), width=35,values=mon)
-    cbmon.place(x=614,y=122)
-    Frame(bg,width=270,height=2,bg="white").place(x=614,y=122)
-    Frame(bg,width=3,height=25,bg="white").place(x=614,y=122)
-    Frame(bg,width=270,height=2,bg="white").place(x=614,y=144)
+
+    cbhk =Combobox(bg,textvariable=data_hocky,font=("Times new roman",12), width=6, values=hocky)
+    cbhk.current(0)
+    cbhk.bind('<<ComboboxSelected>>', capnhatbang)
+    cbhk.place(x=829,y=20)
+
+    cbloai =Combobox(bg,textvariable=data_loai,font=("Times new roman",12), width=7,values=loai)
+    cbloai.current(0)
+    cbloai.place(x=825,y=120)
+
+    cblop =Combobox(bg,textvariable=data_lop,font=("Times new roman",12), width=40,values=lop)
+    cblop.current(0)
+    cblop.bind('<<ComboboxSelected>>', capnhatbang)
+    cblop.place(x=552,y=55)
+
+    Label(bg,font=("Baloo Tamma",11),bg="white",textvariable=data_ngay).place(x=616,y=155)
+
+    cbgv =Combobox(bg,textvariable=data_gv,font=("Times new roman",11), width=35,values=gv)
+    cbgv.place(x=552,y=90)
+    Frame(bg,width=270,height=2,bg="white").place(x=552,y=90)
+    Frame(bg,width=3,height=23,bg="white").place(x=552,y=90)
+    Frame(bg,width=270,height=2,bg="white").place(x=552,y=112)
+
+    cbmon =Combobox(bg,textvariable=data_mon,font=("Times new roman",11), width=25,values=mon)
+    cbmon.place(x=552,y=124)
+    Frame(bg,width=200,height=2,bg="white").place(x=552,y=124)
+    Frame(bg,width=3,height=23,bg="white").place(x=552,y=124)
+    Frame(bg,width=200,height=2,bg="white").place(x=552,y=146)
 
     
     ca=[]
@@ -282,10 +326,10 @@ def main(matkb,malop):
         option.set(0)
         ca.append(option)
 
-    Checkbutton(bg,text="Ca 1",font=("Times new roman",11),variable=ca[1],bg="white").place(x=605,y=205)
-    Checkbutton(bg,text="Ca 2",font=("Times new roman",11),variable=ca[2],bg="white").place(x=680,y=205)
-    Checkbutton(bg,text="Ca 3",font=("Times new roman",11),variable=ca[3],bg="white").place(x=755,y=205)
-    Checkbutton(bg,text="Ca 4",font=("Times new roman",11),variable=ca[4],bg="white").place(x=820,y=205)
+    Checkbutton(bg,text="Ca 1",font=("Times new roman",11),variable=ca[1],bg="white").place(x=605,y=187)
+    Checkbutton(bg,text="Ca 2",font=("Times new roman",11),variable=ca[2],bg="white").place(x=680,y=187)
+    Checkbutton(bg,text="Ca 3",font=("Times new roman",11),variable=ca[3],bg="white").place(x=755,y=187)
+    Checkbutton(bg,text="Ca 4",font=("Times new roman",11),variable=ca[4],bg="white").place(x=820,y=187)
 
 
     f=Frame(bg)
@@ -293,28 +337,29 @@ def main(matkb,malop):
     lb=Label(f)
     lb.pack()
 
-    Entry(bg,font=("Baloo Tamma",11),width=28,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=652,y=294)
+    Entry(bg,font=("Baloo Tamma",11),width=28,textvariable=ndtimkiem,bd=0,highlightthickness=0).place(x=652,y=318)
 
     tv = ttk.Treeview(bg, columns=(1,2,3,4,5), show="headings")
-    tv.column(1, width=30,anchor=CENTER)
-    tv.column(2, width=80,anchor=CENTER)
-    tv.column(3, width=240)
-    tv.column(4, width=120)
+    tv.column(1, width=80,anchor=CENTER)
+    tv.column(2, width=200,anchor=CENTER)
+    tv.column(3, width=80)
+    tv.column(4, width=150)
     tv.column(5, width=50,anchor=CENTER)
     
 
-    tv.heading(1,text="STT")
-    tv.heading(2,text="Ngày")
-    tv.heading(3,text="Môn học")
+    tv.heading(1,text="Ngày")
+    tv.heading(2,text="Môn học")
+    tv.heading(3,text="PP.Giảng")
     tv.heading(4,text="Giảng viên")
     tv.heading(5,text="Ca")
-    tv.place(x=400,y=340)
+    
+    tv.place(x=380,y=370)
     tv.bind('<Double 1>', getrow)
 
-    row=csdl_admin.DS_tkb(matkb)
+    
 
    
-    update(row)
+    khoiphuc()
     win.mainloop()
 
 

@@ -14,7 +14,7 @@ import cv2
 import face_recognition
 import admin_lop
 import admin_giangvien
-import admin_tkb
+import admin_chitiettkb
 import admin_monhoc
 import csdl_admin
 
@@ -96,7 +96,7 @@ def main():
         admin_monhoc.main()
     def menutkb():
         win.destroy()
-        admin_tkb.main()
+        admin_chitiettkb.main()
     def menugiangvien():
         win.destroy()
         admin_giangvien.main()

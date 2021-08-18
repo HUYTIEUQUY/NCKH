@@ -66,6 +66,7 @@ def main():
 
     
     def khoiphuc():
+        macu.set("")
         ma.set("")
         ten.set("")
         malop=csdl.tenlop_thanh_ma(cb_lop.get())
@@ -148,8 +149,15 @@ def main():
         chonanh(lb,i,btn)
 
     def sua():
-        if(ma.get()!=macu.get()):
+        if macu.get()=="":
+            messagebox.showerror("thông báo","Chưa có dữ liệu sửa. \nHãy nhấn 2 lần vào dòng dữ liệu, thay đổi tên và cập nhật")
+        elif ma.get()=="" or ten.get() == "" :
+            messagebox.showwarning("thông báo","Hãy nhập đầy đủ dữ liệu")
+        elif kt_dau_khoangcach(ma.get())==False or kt_dau_khoangcach(ten.get())==False:
+            messagebox.showwarning("thông báo","Dữ liệu không hợp lệ")
+        elif(ma.get()!=macu.get()):
             messagebox.showerror("thông báo","Bạn không được sửa mã")
+            ma.set(macu.get())
         else:
             masv=ma.get()
             tensv=ten.get()
@@ -178,13 +186,14 @@ def main():
 
     def xoa():
         masv=ma.get()
-        if messagebox.askyesno("thông báo","Bạn có thực sự muốn xoá"):
+        if macu.get()=="":
+            messagebox.showwarning("thông báo","Chưa có dữ liệu để xoá. \nHãy nhấn 2 lần vào dòng dữ liệu muốn xoá và nhấn nút xoá")
+        elif messagebox.askyesno("thông báo","Bạn có thực sự muốn xoá"):
             csdl.xoasv(masv)# xoá sv trên database
             khoiphuc()
             xoa_sv_matran(masv)#xoá mahoa anh 
             xoaanh(masv)# xoá anh
-        else: 
-            return True
+        else: return
         
     def xoa_sv_matran(masv):
         tenlop=lop.get().replace(" ","_")
@@ -236,13 +245,32 @@ def main():
         file.close()
         win.destroy()
         dangnhap.main()
-
-   
     
+    def kt_dau_khoangcach(s):
+        return bool(s and s.strip())
+
+    def kt_nhap():
+        if ma.get()=="" or ten.get() == "" :
+            messagebox.showwarning("thông báo","Hãy nhập đầy đủ dữ liệu")
+            
+        elif kt_dau_khoangcach(ma.get())==False or kt_dau_khoangcach(ten.get()==False):
+            messagebox.showwarning("thông báo","Dữ liệu không hợp lệ")
+        
+        elif str(ma.get()).isnumeric()==False:
+            messagebox.showwarning("thông báo","Kiểm tra lại mã sinh viên")
+            
+        elif csdl.kt_masv_tontai(ma.get()) !=[]:
+            messagebox.showerror("thông báo","Mã sinh viên đã tồn tại")
+            
+        else:
+            themdlkhuonmat()
+
+
     def themdlkhuonmat():
         anh=""
         id=txt_masv.get()
         name=txt_hoten.get()
+        name_mahoa=khong_dau(name)
         malop=csdl.tenlop_thanh_ma(cb_lop.get())
         #thêm id , name vào co sở dữ liệu
         
@@ -254,7 +282,7 @@ def main():
             f.close()
         except:
             ref_dictt={}
-        ref_dictt[id]=name
+        ref_dictt[id]=name_mahoa
         f=open("mahoa/"+lop+".pkl","wb")
         pickle.dump(ref_dictt,f)
         f.close()
@@ -380,7 +408,7 @@ def main():
     txt_hoten.place(x=578,y=169)
 
 
-    btnthem=Button(bg,image=img_btnthem,bd=0,highlightthickness=0,command=themdlkhuonmat)
+    btnthem=Button(bg,image=img_btnthem,bd=0,highlightthickness=0,command=kt_nhap)
     btnthem.place(x=487,y=240)
     btnsua=Button(bg,image=img_btnsua,bd=0,highlightthickness=0,command=sua)
     btnsua.place(x=637,y=240)

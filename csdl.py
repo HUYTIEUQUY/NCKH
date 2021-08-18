@@ -16,7 +16,7 @@ conn = mysql.connector.connect(
 
 def dangnhap(email,matkhau):
     cur = conn.cursor()
-    cur.execute("SELECT Email, MatKhau FROM dangnhap WHERE Email like '"+str(email)+"' and MatKhau like '"+matkhau+"'")
+    cur.execute("SELECT Email, MatKhau FROM dangnhap,giangvien WHERE giangvien.MaGV=dangnhap.MaGV AND Email like '"+str(email)+"' and MatKhau like '"+matkhau+"'")
     a=[]
     while True:
         row = cur.fetchone()
@@ -29,7 +29,7 @@ def dangnhap(email,matkhau):
 
 def KT_loaitk(email):
     cur = conn.cursor()
-    cur.execute("SELECT LoaiTK FROM `dangnhap` WHERE email like '"+str(email)+"'")
+    cur.execute("SELECT LoaiTK FROM `dangnhap`,giangvien WHERE dangnhap.MaGV=giangvien.MaGV AND giangvien.Email like '"+str(email)+"'")
     a=[]
     while True:
         row = cur.fetchone()
@@ -207,35 +207,39 @@ def tim_tengv_tu_email():
 
 #------------------------------------------------------------------------------------------
 def hien_lop_theo_tkb(magv,ca):
-   
+    
     x=datetime.now()
     ngay=x.strftime("%x")
     cur = conn.cursor()
-    cur.execute("SELECT TenLop FROM chitiettkb, lop where lop.MaLop=chitiettkb.MaLop AND Ngay like '"+dinh_dang_ngay(str(ngay))+"' AND MaGV="+str(magv)+" AND Ca like '%"+str(ca)+"%'")
     a=[]
-    while True:
-        row = cur.fetchone()
-        
-        if row == None:
-            break
-        if row[0] not in a:
-            a=row[0]
-        conn.commit()
+    try:
+        cur.execute("SELECT TenLop FROM chitiettkb, lop where lop.MaLop=chitiettkb.MaLop AND Ngay like '"+dinh_dang_ngay(str(ngay))+"' AND MaGV="+str(magv)+" AND Ca like '%"+str(ca)+"%'")
+        while True:
+            row = cur.fetchone()
+            
+            if row == None:
+                break
+            if row[0] not in a:
+                a=row[0]
+            conn.commit()
+    except: a=[]
     return a
-        
+
 #---------------------------------------------------------------------------------------------------
 def hien_mon_theo_tkb(magv, ca):
     x=datetime.now()
     cur = conn.cursor()
-    cur.execute("SELECT TenMH FROM chitiettkb, monhoc where monhoc.MaMH=chitiettkb.MaMH AND MaGV="+str(magv)+" AND Ca like '%"+str(ca)+"%' AND Ngay like '"+dinh_dang_ngay(str(x.strftime("%x")))+"'" )
-    a=[]
-    while True:
-        row = cur.fetchone()
-        
-        if row == None:
-            break
-        if row[0] not in a:
-            a= row[0]
+    try:
+        cur.execute("SELECT TenMH FROM chitiettkb, monhoc where monhoc.MaMH=chitiettkb.MaMH AND MaGV="+str(magv)+" AND Ca like '%"+str(ca)+"%' AND Ngay like '"+dinh_dang_ngay(str(x.strftime("%x")))+"'" )
+        a=[]
+        while True:
+            row = cur.fetchone()
+            
+            if row == None:
+                break
+            if row[0] not in a:
+                a= row[0]
+    except: a=[]
     conn.commit()
     return a
 
@@ -298,7 +302,7 @@ def cahoc():
 #-----------------------------------------------------------------------------------------------
 def tim_gv_trong_khoa(makhoa):
     cur = conn.cursor()
-    cur.execute("SELECT TenGV FROM giangvien,dangnhap WHERE giangvien.Email=dangnhap.Email AND MaKhoa like '"+str(makhoa)+"' AND LoaiTK= 'user'")
+    cur.execute("SELECT TenGV FROM giangvien,dangnhap WHERE giangvien.MaGV=dangnhap.MaGV AND MaKhoa like '"+str(makhoa)+"' AND LoaiTK= 'user'")
     a=[]
     while True:
         row = cur.fetchone()
@@ -344,6 +348,7 @@ def bangtkb(matkb):
 
 def dinh_dang_ngay(ngay):
     ngay=str(ngay).replace("/"," ")
+    ngay=str(ngay).replace("-"," ")
     d=ngay.split()
     if len(d[0])==1:
         d[0]="0"+d[0]
@@ -354,6 +359,9 @@ def dinh_dang_ngay(ngay):
     else:
         ngay=d[1]+"/"+d[0]+"/20"+d[2]
     return ngay
+ngay=datetime.now()
+
+
 
 def xoadiemdanh(malop,mamh,mgv,ca):
     ngay=datetime.now()
@@ -401,16 +409,22 @@ def cagiang(magv,l,m,c):
 
 def gvdiemdanh(magv,ngaydd,tenlopdd,tenmhdd,cadd):
     cur = conn.cursor()
-    cur.execute("SELECT Ngay, TenLop,TenMH,Ca FROM chitiettkb, monhoc, lop WHERE chitiettkb.MaMH=monhoc.MaMH AND lop.MaLop = chitiettkb.MaLop AND MaGV ="+str(magv)+" AND TrangThaiDD like 'chưa' AND Ngay < '"+str(ngay())+"'")
-    while True:
-        row = cur.fetchone()
-        
-        if row == None:
-            break
-        ngaydd.append(row[0])
-        tenlopdd.append(row[1])
-        tenmhdd.append(row[2])
-        cadd.append(row[3])
+    try:
+        cur.execute("SELECT Ngay, TenLop,TenMH,Ca FROM chitiettkb, monhoc, lop WHERE chitiettkb.MaMH=monhoc.MaMH AND lop.MaLop = chitiettkb.MaLop AND MaGV ="+str(magv)+" AND TrangThaiDD like 'chưa' AND Ngay < '"+str(ngay())+"'")
+        while True:
+            row = cur.fetchone()
+            
+            if row == None:
+                break
+            ngaydd.append(row[0])
+            tenlopdd.append(row[1])
+            tenmhdd.append(row[2])
+            cadd.append(row[3])
+    except:
+        ngaydd=[]
+        tenlopdd=[]
+        tenmhdd=[]
+        cadd=[]
     conn.commit()
     if ngaydd != []:
         return True
@@ -602,21 +616,14 @@ def nhap_excel_csdl(ma,ten,malop):
     cur.execute("INSERT INTO sinhvien(MaSV,TenSV,MaLop) VALUES ("+str(ma)+",'"+str(ten)+"', "+str(malop)+")")
     conn.commit()
 
-def Ngay_DD(makhoa):
+def kt_masv_tontai(masv):
     cur = conn.cursor()
-    a=lop_theo_khoa(makhoa)
-    b=[]
-    for i in range(len(a)):
-        cur.execute("SELECT Ngay FROM diemdanh,lop WHERE diemdanh.MaLopp=lop.MaLop AND TenLop='"+str(a[i])+"'")
-        while True:
-            row = cur.fetchone()
-            if row == None:
-                break
-            b.append(row)
-    b=dict.fromkeys(b)
-    d=list(b)
+    cur.execute(" SELECT MaSV FROM sinhvien where  MaSV ='"+str(masv)+"' ") 
+    rows = cur.fetchall()
     conn.commit()
-    return d
+    return rows
+
+
   
 
 

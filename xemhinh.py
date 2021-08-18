@@ -61,6 +61,7 @@ def main(masv):
         for i in range(5):
             img=Image.open("img_anhsv/"+manganh[i])
             img.thumbnail((200,200))
+            img = img.resize ((50, 50), Image.ANTIALIAS)
             img=ImageTk.PhotoImage(img)
             
             if(i==0):
